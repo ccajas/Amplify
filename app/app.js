@@ -47,6 +47,8 @@ var Header = React.createClass({
 	}
 });
 
+/** Main app module area **/
+
 var App = React.createClass({
 	displayName: "App",
 
@@ -54,23 +56,23 @@ var App = React.createClass({
 		return { data: dummyData };
 	},
 
-	loadArticles: function loadArticles() {
+	loadData: function loadData() {
 		$.ajax({
 			url: this.props.url,
 			dataType: 'json',
 			cache: false,
 			success: (function (newData) {
-				this.setState({ data: newData.data });
+				this.setState({ data: newData.request });
 			}).bind(this),
 
 			error: (function (xhr, status, err) {
-				console.error("this.props.url: ", status, err.toString());
+				console.error("this.props.url:", status, err.toString());
 			}).bind(this)
 		});
 	},
 
 	componentDidMount: function componentDidMount() {
-		//this.loadArticles();
+		this.loadData();
 	},
 
 	componentWillUnmount: function componentWillUnmount() {
@@ -88,21 +90,16 @@ var App = React.createClass({
 		var module = '';
 		var error = '';
 
-		var articles = this.state.data.map(function (a) {
-			return React.createElement(
-				Article,
-				{ articleTitle: a.title, author: a.author, key: a.id, id: a.id },
-				a.text,
-				a.extra
-			);
-		});
-
 		if (this.props.module === 'articleList') module = React.createElement(ArticleList, { articlesTitle: "Latest Articles", data: this.state.data, data: articles,
 			_update: this._update });
 
 		if (this.props.module === 'singleArticle') module = React.createElement(Article, { data: articles });
 
-		// Append error function
+		if (this.props.module === 'home') module = React.createElement(Home, { webserver: this.state.data });
+
+		if (this.props.module === 'dataview') module = React.createElement(DataView, { datatype: this.props.datatype, data: this.state.data });
+
+		// Append error function for sidenav use
 		this.props.sidenav.props._displayError = this._error;
 
 		return React.createElement(
@@ -119,13 +116,77 @@ var App = React.createClass({
 				React.createElement(
 					"div",
 					null,
-					module,
+					this.props.module,
 					React.createElement("br", null)
 				)
 			)
 		);
 	}
 });
+
+/** Home module **/
+
+var Home = React.createClass({
+	displayName: "Home",
+
+	render: function render() {
+		var extensions = $.makeArray(this.props.webserver.extensions);
+
+		return React.createElement(
+			"div",
+			{ className: "col-sm-12" },
+			React.createElement(
+				"h3",
+				null,
+				"Amplify Info"
+			),
+			React.createElement(
+				"h4",
+				null,
+				"Web Server"
+			),
+			React.createElement(
+				"ul",
+				null,
+				React.createElement(
+					"li",
+					null,
+					React.createElement(
+						"h5",
+						null,
+						"Software"
+					),
+					" ",
+					this.props.webserver.software
+				),
+				React.createElement(
+					"li",
+					null,
+					React.createElement(
+						"h5",
+						null,
+						"PHP version"
+					),
+					" ",
+					this.props.webserver.phpversion
+				),
+				React.createElement(
+					"li",
+					null,
+					React.createElement(
+						"h5",
+						null,
+						"Extensions"
+					),
+					" ",
+					extensions.join(', ')
+				)
+			)
+		);
+	}
+});
+
+/** Side navbar **/
 
 var SideNav = React.createClass({
 	displayName: "SideNav",
@@ -163,13 +224,22 @@ var SideNav = React.createClass({
 
 	render: function render() {
 		var self = this;
-		var heading = self.props.dbname ? self.props.dbname : 'Databases';
+		var navheading = self.props.dbname ? self.props.dbname : 'Databases';
 
 		// Get list of tables/databases
 		var datalist = this.state.data.map(function (item) {
 			var itemEntry = self.props.dbname ? item.Table : item.Database;
 
-			return React.createElement(
+			// Return appropriate link based on item type
+			return self.props.dbname ? React.createElement(
+				"li",
+				null,
+				React.createElement(
+					"a",
+					{ href: '#/db/' + self.props.dbname + '/table/' + itemEntry },
+					itemEntry
+				)
+			) : React.createElement(
 				"li",
 				null,
 				React.createElement(
@@ -191,39 +261,55 @@ var SideNav = React.createClass({
 			React.createElement(
 				"ul",
 				{ className: "nav" },
+				React.createElement(SideNavTools, { dbname: self.props.dbname }),
+				React.createElement(SideNavDatalist, { heading: navheading, data: this.state.data, data: datalist })
+			)
+		);
+	}
+});
+
+var SideNavTools = React.createClass({
+	displayName: "SideNavTools",
+
+	render: function render() {
+		return React.createElement(
+			"li",
+			{ className: "tools" },
+			React.createElement(
+				"div",
+				null,
+				"Tools"
+			),
+			React.createElement(
+				"ul",
+				{ className: "subnav" },
 				React.createElement(
 					"li",
-					{ className: "tools" },
+					null,
 					React.createElement(
-						"div",
-						null,
-						"Tools"
-					),
-					React.createElement(
-						"ul",
-						{ className: "subnav" },
-						React.createElement(
-							"li",
-							null,
-							React.createElement(
-								"a",
-								{ href: '#/db/' + self.props.dbname + '/sql' },
-								"SQL command"
-							)
-						),
-						React.createElement(
-							"li",
-							null,
-							"Import"
-						),
-						React.createElement(
-							"li",
-							null,
-							"Export"
-						)
+						"a",
+						{ href: '#/db/' + this.props.dbname + '/sql' },
+						"SQL command"
 					)
 				),
-				React.createElement(SideNavDatalist, { heading: heading, data: this.state.data, data: datalist })
+				React.createElement(
+					"li",
+					null,
+					React.createElement(
+						"a",
+						{ href: '#/db/' + this.props.dbname + '/import' },
+						"Import"
+					)
+				),
+				React.createElement(
+					"li",
+					null,
+					React.createElement(
+						"a",
+						{ href: '#/db/' + this.props.dbname + '/export' },
+						"Export"
+					)
+				)
 			)
 		);
 	}
@@ -255,145 +341,37 @@ var SideNavDatalist = React.createClass({
 	}
 });
 
-var ArticleList = React.createClass({
-	displayName: "ArticleList",
+/** DataView Module **/
 
-	getInitialState: function getInitialState() {
-		return { data: this.props.data };
-	},
-
-	propTypes: {
-		data: React.PropTypes.array.isRequired
-	},
+var DataView = React.createClass({
+	displayName: "DataView",
 
 	render: function render() {
 		return React.createElement(
 			"div",
-			{ className: "articleList col-sm-12" },
-			React.createElement(
-				"h2",
-				null,
-				this.props.articlesTitle
-			),
-			React.createElement(
-				"ul",
-				null,
-				this.props.data
-			),
-			React.createElement(ArticleForm, { _update: this.props._update })
-		);
-	}
-});
-
-var Article = React.createClass({
-	displayName: "Article",
-
-	render: function render() {
-		var idName = "article_" + this.props.id;
-		return React.createElement(
-			"li",
-			{ id: idName },
-			React.createElement(
-				"h4",
-				{ className: "title" },
-				React.createElement(
-					"a",
-					{ onClick: nav('/article/' + this.props.id) },
-					React.createElement(
-						"b",
-						null,
-						this.props.articleTitle
-					)
-				)
-			),
-			React.createElement(
-				"h5",
-				{ className: "articleAuthor" },
-				React.createElement(
-					"em",
-					null,
-					"By ",
-					this.props.author
-				)
-			),
-			React.createElement(
-				"p",
-				null,
-				this.props.children[0]
-			)
-		);
-	}
-});
-
-var ArticleForm = React.createClass({
-	displayName: "ArticleForm",
-
-	getInitialState: function getInitialState() {
-		return { author: '', text: '' };
-	},
-
-	handleAuthorChange: function handleAuthorChange(e) {
-		this.setState({ author: e.target.value });
-	},
-
-	handleTextChange: function handleTextChange(e) {
-		this.setState({ text: e.target.value });
-	},
-
-	handleSubmit: function handleSubmit(e) {
-		e.preventDefault();
-
-		var author = this.state.author.trim();
-		var text = this.state.text.trim();
-
-		if (!text || !author) return;
-
-		// Send request
-		var obj = {
-			id: dummyData.length + 1,
-			title: 'New',
-			author: this.state.author,
-			text: this.state.text,
-			extra: '...'
-		};
-
-		console.log('article submitted!');
-
-		// Empty the form fields
-		this.setState({ author: '', text: '' });
-		this.props._update(obj);
-	},
-
-	render: function render() {
-		return React.createElement(
-			"form",
-			{ className: "articleForm", onSubmit: this.handleSubmit },
+			{ className: "col-sm-12" },
 			React.createElement(
 				"h3",
 				null,
-				"Submit an article..."
+				"Data View"
 			),
 			React.createElement(
-				"a",
-				{ onClick: nav('/test') },
-				"Hello!"
-			),
-			React.createElement(
-				"div",
+				"h3",
 				null,
-				React.createElement("input", { type: "text", placeholder: "Your name",
-					onChange: this.handleAuthorChange, value: this.state.author })
+				this.props.datatype,
+				": ",
+				React.createElement(
+					"em",
+					null,
+					this.props.structureName
+				)
 			),
 			React.createElement(
-				"div",
-				null,
-				React.createElement("textarea", { placeholder: "Say something...", value: this.state.text,
-					onChange: this.handleTextChange })
-			),
-			React.createElement(
-				"div",
-				null,
-				React.createElement("input", { type: "submit", value: "Post" })
+				"h4",
+				{ "class": "sub" },
+				"...",
+				this.props.datatype,
+				" found"
 			)
 		);
 	}
@@ -404,7 +382,7 @@ var Amplify = React.createClass({
 
 	getInitialState: function getInitialState() {
 		console.log('Setup amplify');
-		return { module: React.createElement("div", null) };
+		return { app: React.createElement("div", null) };
 	},
 
 	componentDidMount: function componentDidMount() {
@@ -418,15 +396,18 @@ var Amplify = React.createClass({
 			'': function _() {
 				console.log("home");
 				var sidenav = React.createElement(SideNav, { url: api('show/databases/mysql'), dbname: "" });
+
 				self.setState({
-					module: React.createElement(App, { url: api('list/articles'), module: "articleList", sidenav: sidenav })
+					app: React.createElement(App, { url: api('webserver'), module: "home", sidenav: sidenav })
 				});
 			},
 			'/db/:dbname': function dbDbname(dbname) {
 				console.log("show tables from " + dbname);
 				var sidenav = React.createElement(SideNav, { url: api('show/tables/' + dbname), dbname: dbname });
+				var module = React.createElement(DataView, { datatype: "Tables" });
+
 				self.setState({
-					module: React.createElement(App, { url: api('list/articles'), module: "articleList", sidenav: sidenav })
+					app: React.createElement(App, { url: api('list/articles'), module: module, sidenav: sidenav })
 				});
 			},
 			'/article/:id': function articleId(id) {
@@ -460,7 +441,7 @@ var Amplify = React.createClass({
 			React.createElement(
 				"div",
 				{ className: "container-fluid", id: "container" },
-				this.state.module
+				this.state.app
 			),
 			React.createElement("br", null)
 		);
