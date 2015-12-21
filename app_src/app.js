@@ -42,21 +42,23 @@ var App = React.createClass(
 {
   	getInitialState: function() 
   	{
-    	return { data: dummyData};
+    	return { data: dummyData, errors: [] };
   	},
 
   	loadData: function()
   	{
+  		console.log("load app data")
   	    $.ajax({
 			url: this.props.url,
 			dataType: 'json',
 			cache: false,
 			success: function(newData) {
+				console.log("New data loaded")
 				this.setState({data: newData.request});
 			}.bind(this),
 
 			error: function(xhr, status, err) {
-				console.error("this.props.url:", status, err.toString());
+				this._error(xhr.responseJSON.request.message);
 			}.bind(this)
 		});
   	},
@@ -71,45 +73,47 @@ var App = React.createClass(
     	//this.intervals.map(clearInterval);
   	},
 
-   	_update: function(val)
-  	{
-  		this.state.data.push(val);
-    	this.setState({ data: this.state.data });
-	},
-
-	_error: function()
+	_error: function (errorMsg)
 	{
+		var errors = this.state.errors;
 
+		if (errors.indexOf(errorMsg) < 0)
+		{
+			errors.push(errorMsg);
+			this.setState({ errors: errors });
+		}
 	},
 
 	render: function() 
 	{
 		var module = '';
-		var error = '';
-
-		if (this.props.module === 'articleList')
-			module = <ArticleList articlesTitle="Latest Articles" data={this.state.data} data={articles} 
-				_update={this._update}/>;
-
-		if (this.props.module === 'singleArticle')
-			module = <Article data={articles} />;
 
 		if (this.props.module === 'home')
-			module = <Home webserver={this.state.data}/>;
+			module = <Home webserver={this.state.data} _error={this._error}/>;
 
 		if (this.props.module === 'dataview')
-			module = <DataView datatype={this.props.datatype} data={this.state.data}/>;
+			module = <DataView datatype={this.props.datatype} data={this.state.data} _error={this._error}/>;
 
-		// Append error function for sidenav use
-		this.props.sidenav.props._displayError = this._error;
+		console.log('App render')
 
 		return (
 			<div className="row-fluid">
 				<section className="col-sm-2">
-					{this.props.sidenav}
+	    			<SideNav url={this.props.sidenavUrl} dbname={this.props.dbname} _error={this._error}/>
 				</section>
 				<section className="col-sm-10">
-					<div>{this.props.module}<br/></div>
+					{
+						(() => {
+							if (this.state.errors.length)
+  							return (
+  								<div className="col-sm-12">
+									<br/><h4>The following errors have been found:</h4><br/>
+									<p className="alert alert-danger">{this.state.errors}</p>
+								</div>
+							)
+						})
+					()}
+					{module}
 				</section>
 			</div>
 		);
@@ -120,6 +124,11 @@ var App = React.createClass(
 
 var Home = React.createClass(
 {
+	getInitialState: function()
+	{
+		return { data: '' }
+	},
+
 	render: function()
 	{
 		var extensions = $.makeArray(this.props.webserver.extensions);
@@ -149,8 +158,6 @@ var SideNav = React.createClass(
 
   	loadData: function()
   	{
-  		console.log('load sidebar');
-
   	    $.ajax({
 			url: this.props.url,
 			dataType: 'json',
@@ -162,8 +169,7 @@ var SideNav = React.createClass(
 			}.bind(this),
 
 			error: function(xhr, status, err) {
-				this.props._displayError(xhr.responseJSON.message);
-				console.error("this.props.url:", status, err.toString());
+				this.props._error(xhr.responseJSON.request.message);
 			}.bind(this)
 		});
   	},
@@ -185,14 +191,14 @@ var SideNav = React.createClass(
 		var navheading = (self.props.dbname) ? self.props.dbname : 'Databases';
 
 		// Get list of tables/databases
-	    var datalist = this.state.data.map(function(item) 
+	    var datalist = this.state.data.map(function(item, i) 
 	    {
 	    	var itemEntry = (self.props.dbname) ? item.Table : item.Database;
 
 	    	// Return appropriate link based on item type
 	      	return ((self.props.dbname) ?
-	      		<li><a href={'#/db/'+ self.props.dbname +'/table/'+ itemEntry}>{itemEntry}</a></li> : 
-				<li><a href={'#/db/'+ itemEntry}>{itemEntry}</a></li>
+	      		<li key={i}><a href={'#/db/'+ self.props.dbname +'/table/'+ itemEntry}>{itemEntry}</a></li> : 
+				<li key={i}><a href={'#/db/'+ itemEntry}>{itemEntry}</a></li>
 	      	);
 	    });
 
@@ -251,7 +257,7 @@ var DataView = React.createClass(
 			<div className="col-sm-12">
 				<h3>Data View</h3>
 				<h3>{this.props.datatype}: <em>{this.props.structureName}</em></h3>
-				<h4 class="sub">...{this.props.datatype} found</h4>
+				<h4 className="sub">...{this.props.datatype} found</h4>
 			</div>
 		)
 	}
@@ -278,20 +284,19 @@ var Amplify = React.createClass(
 		    '': function() 
 		    {
 	    		console.log("home");
-	    		var sidenav = <SideNav url={api('show/databases/mysql')} dbname=''/>
 
 	    		self.setState({ 
-	    			app: <App url={api('webserver')} module='home' sidenav={sidenav}/> 
+	    			app: <App module='home' url={api('webserver')} 
+	    				sidenavUrl={api('show/databases/mysql')} dbname=''/> 
 	    		});
 		    },
 		    '/db/:dbname': function(dbname)
 		    {
-		    	console.log("show tables from "+ dbname);
-		    	var sidenav = <SideNav url={api('show/tables/'+ dbname)} dbname={dbname}/>
-		    	var module  = <DataView datatype='Tables'/>;
+		    	console.log("show tables from "+ dbname);	    	
 
 	    		self.setState({ 
-	    			app: <App url={api('list/articles')} module={module} sidenav={sidenav}/> 
+	    			app: <App module='dataview' url={api('list/articles')} 
+	    				sidenavUrl={api('show/tables/'+ dbname)} dbname={dbname} /> 
 	    		});	    	
 		    },
 		    '/article/:id': function(id)
@@ -311,7 +316,6 @@ var Amplify = React.createClass(
 
 	render: function () 
 	{
-		console.log(this.state);
 	    return (
 	    	<div>
 				<Header></Header>
