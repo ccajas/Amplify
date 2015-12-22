@@ -95,7 +95,8 @@ class Router
 
             if ($action == 'query')
             {
-                $query = json_decode(file_get_contents("php://input"), true);
+                $query = $_POST['query'];
+                //$query = json_decode(file_get_contents("php://input"), true);
                 $data_objects['request'] = $db->query($query);
             }
 
