@@ -60,7 +60,13 @@ var SideNav = React.createClass(
 				<h4>Sidebar nav</h4>
 				<ul className="nav">
 					<SideNavTools dbname={self.props.dbname} tablename={self.props.tablename} />
-					<SideNavOperations dbname={self.props.dbname} tablename={self.props.tablename} />
+
+					{(() => {
+						if (this.props.dbname)
+							return <SideNavOperations dbname={self.props.dbname} tablename={self.props.tablename} />
+						})
+					()}
+
 					<SideNavDatalist heading={navheading} data={this.state.data} data={datalist}/>
 				</ul>
 			</div>

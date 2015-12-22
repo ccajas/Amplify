@@ -1,22 +1,4 @@
 
-/** Header component **/
-
-var Header = React.createClass(
-{
-	render: function()
-	{
-		return (
-			<header className="container-fluid">
-				<div className="row-fluid">
-					<h3 className="col-sm-12">
-						<a href="#">Amplify</a>
-						<a href="#"><span>lite</span></a>
-					</h3>
-				</div>
-			</header>
-		)
-	}
-});
 
 /** Main app module area **/
 
@@ -50,7 +32,7 @@ var App = React.createClass(
 		var module = '';
 
 		if (this.props.module === 'home')
-			module = <Home webserver={this.state.data} _error={this._error}/>;
+			module = <Home url={this.state.url} webserver={this.state.data} _error={this._error}/>;
 
 		if (this.props.module === 'dataview')
 			module = <DataView datatype={this.props.datatype} url={this.state.url}
@@ -82,21 +64,69 @@ var App = React.createClass(
 	}
 });
 
+/** Header component **/
+
+var Header = React.createClass(
+{
+	render: function()
+	{
+		return (
+			<header className="container-fluid">
+				<div className="row-fluid">
+					<h3 className="col-sm-12">
+						<a href="#">Amplify</a>
+						<a href="#"><span>lite</span></a>
+					</h3>
+				</div>
+			</header>
+		)
+	}
+});
+
 /** Home module **/
 
 var Home = React.createClass(
 {
+	getInitialState: function() 
+	{
+		return { webserver: [], url: this.props.url };
+	},
+
+	loadData: function()
+	{
+		$.ajax({
+			url: this.props.url,
+			dataType: 'json',
+			cache: false,
+			success: function(newData) {
+				this.setState({ 
+					url: this.props.url,
+					webserver: newData.request
+				});
+			}.bind(this),
+
+			error: function(xhr, status, err) {
+				this.props._error(xhr.responseJSON.request.message);
+			}.bind(this)
+		});
+	},
+
+	componentDidMount: function() 
+	{
+		this.loadData();
+	},
+
 	render: function()
 	{
-		var extensions = $.makeArray(this.props.webserver.extensions);
+		var extensions = $.makeArray(this.state.webserver.extensions);
 
 		return ( 
 			<div className="col-sm-12">
 				<h3>Amplify Info</h3>
 				<h4>Web Server</h4>
 				<ul>
-					<li><h5>Software</h5> {this.props.webserver.software}</li>
-					<li><h5>PHP version</h5> {this.props.webserver.phpversion}</li>
+					<li><h5>Software</h5> {this.state.webserver.software}</li>
+					<li><h5>PHP version</h5> {this.state.webserver.phpversion}</li>
 					<li><h5>Extensions</h5> {extensions.join(', ')}</li>
 				</ul>
 			</div>
