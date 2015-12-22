@@ -346,6 +346,24 @@ var DataView = React.createClass({
 		this.setState({ willReceiveProps: true });
 	},
 
+	_sortBy: function (sortby, e) {
+		// Set the new sort order based on the current one
+		var sort = this.state.currentsort ? this.state.currentsort.split(',') : ',';
+		var newsort;
+
+		if (sort[0] == sortby) newsort = sortby + ',' + (sort[1] == 'asc' ? 'desc' : 'asc');else newsort = sortby + ',asc';
+
+		// Sort the items
+		var sorted = $.makeArray(this.state.data).sort(function (a, b) {
+			val_a = typeof a[sortby] === 'string' ? a[sortby].toLowerCase() : a[sortby];
+			val_b = typeof b[sortby] === 'string' ? b[sortby].toLowerCase() : b[sortby];
+
+			if (sort[1] == 'asc') return val_a > val_b ? -1 : val_a < val_b ? 1 : 0;else return val_a > val_b ? 1 : val_a < val_b ? -1 : 0;
+		});
+
+		this.setState({ data: sorted, currentsort: newsort });
+	},
+
 	render: function () {
 		if (this.state.data && !this.state.willReceiveProps) {
 			console.log("rendering DataView...");
@@ -354,6 +372,31 @@ var DataView = React.createClass({
 			var divStyle = { padding: '10px 15px' };
 
 			console.log("loading rows...");
+
+			// Print column names
+			var colNames = $.makeArray(this.state.data).map(function (row, i) {
+				if (i == 0) {
+					return React.createElement(
+						'tr',
+						{ key: 'heading' },
+						Object.keys(row).map(function (key) {
+							return React.createElement(
+								'th',
+								{ onClick: this._sortBy.bind(this, key), key: key },
+								React.createElement(
+									'b',
+									null,
+									React.createElement(
+										'em',
+										null,
+										key
+									)
+								)
+							);
+						}, this)
+					);
+				}
+			}, this);
 
 			var rows = $.makeArray(this.state.data).map(function (row, i) {
 				if (i + 1 == length) {
@@ -373,30 +416,6 @@ var DataView = React.createClass({
 						);
 					})
 				);
-			});
-
-			var colNames = $.makeArray(this.state.data).map(function (row, i) {
-				if (i == 0) {
-					return React.createElement(
-						'tr',
-						{ key: 'heading' },
-						Object.keys(row).map(function (key) {
-							return React.createElement(
-								'th',
-								{ key: key },
-								React.createElement(
-									'b',
-									null,
-									React.createElement(
-										'em',
-										null,
-										key
-									)
-								)
-							);
-						})
-					);
-				}
 			});
 
 			return React.createElement(
