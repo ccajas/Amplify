@@ -90,7 +90,7 @@ var App = React.createClass(
 
 		if (this.props.module === 'dataview')
 			module = <DataView datatype={this.props.datatype} url={this.props.url}
-				dbname={this.props.dbname} _error={this._error}/>;
+				dbname={this.props.dbname} tablename={this.props.tablename} _error={this._error}/>;
 
 		return (
 			<div className="row-fluid">
@@ -245,7 +245,7 @@ var DataView = React.createClass(
 {
   	getInitialState: function() 
   	{
-    	return { data: [], dbname: ''};
+    	return { data: [], dbname: '', tablename: ''};
   	},
 
   	loadData: function()
@@ -258,7 +258,8 @@ var DataView = React.createClass(
 				console.log(data);
 				this.setState({ 
 					data: data.request.rows, 
-					dbname: this.props.dbname
+					dbname: this.props.dbname,
+					tablename: this.props.tablename
 				});
 			}.bind(this),
 
@@ -275,8 +276,12 @@ var DataView = React.createClass(
 
   	componentDidUpdate: function() 
   	{
-  		if (this.state.dbname != this.props.dbname)
+  		if (this.state.dbname != this.props.dbname ||
+  			this.state.tablename != this.props.tablename)
+  		{
+  			console.log("refresh dataview data")
 			this.loadData();
+		}
 	},
 
 	render: function()
@@ -339,14 +344,16 @@ var DataView = React.createClass(
 						</div>
 					</div>
 
-					<table className="datalist">
-						<thead>
-							{colNames}
-						</thead>
-						<tbody>
-							{rows}
-						</tbody>
-					</table>
+					<div className="datalist tableview">
+						<table className="col-sm-12">
+							<thead>
+								{colNames}
+							</thead>
+							<tbody>
+								{rows}
+							</tbody>
+						</table>
+					</div>
 				</div>
 			)
 		}
@@ -401,8 +408,22 @@ var Amplify = React.createClass(
 	    				url={api('show/tables/'+ dbname)} 
 	    				datatype='Table'
 	    				sidenavUrl={api('show/tables/'+ dbname)} 
-	    				name={dbname} /> 
+	    				dbname={dbname} /> 
 	    		});	    	
+		    },
+		    '/db/:dbname/table/:tablename': function(dbname, tablename)
+		    {
+		    	console.log("show columns from "+ dbname);	    	
+
+	    		self.setState({ 
+	    			app: <App 
+	    				module='dataview' 
+	    				url={api('show/columns/'+ dbname +'.'+ tablename)} 
+	    				datatype='Column'
+	    				sidenavUrl={api('show/tables/'+ dbname)} 
+	    				dbname={dbname}
+	    				tablename={tablename} /> 
+	    		});
 		    },
 		    '/article/:id': function(id)
 		    {
