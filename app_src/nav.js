@@ -78,10 +78,6 @@ var SideNavTools = React.createClass(
 {
 	render: function()
 	{
-		var operations;
-		console.log("SideNavTools props")
-		console.log(this.props)
-
 		return (
 			<li className="tools">
 				<div>Tools</div>
@@ -104,23 +100,26 @@ var SideNavOperations = React.createClass(
 		// If we are viewing a table, load table operations
 		if (this.props.tablename)
 		{
-			operations =
-				<li><a href={'#/db/'+ this.props.dbname +'/table/'+ this.props.tablename}>View Structure</a></li>
+			operations = 
+				<ul className="subnav">
+					<li><a href={'#/db/'+ this.props.dbname +'/table/'+ this.props.tablename}>View Structure</a></li>
+					<li><a href={'#/db/'+ this.props.dbname +'/select/'+ this.props.tablename}>Select Data</a></li>
+				</ul>
 
 		}
 		// Else, load database operations
 		else
 		{
 			operations =
-				<li><a href={'#/insert/'+ this.props.dbname}>Insert Table</a></li>
+				<ul className="subnav">
+					<li><a href={'#/insert/'+ this.props.dbname}>Insert Table</a></li>
+				</ul>
 		}
 
 		return (
 			<li className="operations">
 				<div>Operations</div>
-				<ul className="subnav">
-					{operations}
-				</ul>
+				{operations}
 			</li>
 		);
 	}
