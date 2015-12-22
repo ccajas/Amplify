@@ -201,7 +201,7 @@ var ContentEditable = React.createClass({
 	displayName: 'ContentEditable',
 
 	render: function () {
-		return React.createElement('div', { className: this.props.className, onInput: this.handleInput, onBlur: this.handleChange,
+		return React.createElement('div', { className: this.props.className, onInput: this.handleChange,
 			contentEditable: 'true', dangerouslySetInnerHTML: { __html: this.props.html } });
 	},
 
@@ -218,7 +218,9 @@ var ContentEditable = React.createClass({
 				}
 			});
 		}
+
 		this.lastHtml = html;
+		this.props._handleUpdate();
 	}
 });
 
@@ -231,12 +233,10 @@ var Sql = React.createClass({
 		return { query: '' };
 	},
 
-	handleSqlChange: (function (e) {
-		console.log('updated');
-		this.setState({ query: e.target.value });
-	}).bind(this),
-
-	componentDidUpdate: function () {},
+	handleUpdate: function () {
+		console.log("component update");
+		this.setState({ query: this.sqlInput.lastHtml });
+	},
 
 	render: function () {
 		return React.createElement(
@@ -260,7 +260,8 @@ var Sql = React.createClass({
 					),
 					React.createElement('br', null),
 					this.state.query,
-					React.createElement(ContentEditable, { className: 'console', placeholder: 'Enter your query here' }),
+					React.createElement(ContentEditable, { className: 'console', html: 'Enter your query here', _handleUpdate: this.handleUpdate,
+						ref: ref => this.sqlInput = ref }),
 					React.createElement('br', null),
 					React.createElement(
 						'button',
