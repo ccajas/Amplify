@@ -329,7 +329,7 @@ var DataView = React.createClass({
 		//window.scrollTo(0, 0);
 
 		// Or smooth scroll
-		//$("html, body").animate({ scrollTop: 0 }, 400);
+		$("html, body").animate({ scrollTop: 0 }, 300);
 	},
 
 	componentDidMount: function () {
@@ -353,9 +353,13 @@ var DataView = React.createClass({
 			var length = this.state.data.length;
 			var divStyle = { padding: '10px 15px' };
 
+			console.log("loading rows...");
+
 			var rows = $.makeArray(this.state.data).map(function (row, i) {
-				console.log("loading rows...");
-				if (i + 1 == length) console.log("Bing!");
+				if (i + 1 == length) {
+					console.log("Bing!");
+				}
+
 				return React.createElement(
 					'tr',
 					{ key: i },
@@ -371,22 +375,29 @@ var DataView = React.createClass({
 				);
 			});
 
-			/*
-   var colNames = $.makeArray(this.state.data)
-   	.map(function(row, i)
-   {
-   	console.log(this.state.data)
-   	return (
-   		<tr>
-   		{
-   			Object.keys(row[0]).map(function(key) {
-   				console.log(key);
-   				return <th key={key}>{key}</th>;
-   			})
-   		}
-   		</tr>
-   	);
-   }); */
+			var colNames = $.makeArray(this.state.data).map(function (row, i) {
+				if (i == 0) {
+					return React.createElement(
+						'tr',
+						{ key: 'heading' },
+						Object.keys(row).map(function (key) {
+							return React.createElement(
+								'th',
+								{ key: key },
+								React.createElement(
+									'b',
+									null,
+									React.createElement(
+										'em',
+										null,
+										key
+									)
+								)
+							);
+						})
+					);
+				}
+			});
 
 			return React.createElement(
 				'div',
@@ -462,7 +473,11 @@ var DataView = React.createClass({
 					React.createElement(
 						'table',
 						{ className: 'col-sm-12' },
-						React.createElement('thead', null),
+						React.createElement(
+							'thead',
+							null,
+							colNames
+						),
 						React.createElement(
 							'tbody',
 							null,

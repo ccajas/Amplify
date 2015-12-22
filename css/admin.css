@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css?family=Roboto:400,400italic,700,700italic);
+/*@import url(https://fonts.googleapis.com/css?family=Roboto:400,400italic,700,700italic);
 /*@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700,600italic);
 @import url(https://fonts.googleapis.com/css?family=Lato:400,700italic);
 @import url(https://fonts.googleapis.com/css?family=Work+Sans); */
@@ -11,8 +11,9 @@ html {
 }
 
 body {
-	background: #fff;
 	font-family: 'Roboto', 'Open Sans', Helvetica, Arial, sans-serif;
+	background: #fff;	
+	color: #405060;
 }
 
 h1, h2, h3 {
@@ -118,12 +119,12 @@ header h3 {
 	font-weight: bold;
 	font-style: italic;
 	font-variant: small-caps;
-	color: #444;
+	color: #405060;
 }
 
 header h3 a,
 header h3 a:hover {
-	color: #444;
+	color: #456;
 	text-decoration: none;
 	background-color: transparent !important;
 }

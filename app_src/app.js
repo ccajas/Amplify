@@ -268,7 +268,7 @@ var DataView = React.createClass(
 		//window.scrollTo(0, 0);
 
 		// Or smooth scroll
-		//$("html, body").animate({ scrollTop: 0 }, 400);
+		$("html, body").animate({ scrollTop: 0 }, 300);
 	},
 
 	componentDidMount: function() 
@@ -299,43 +299,48 @@ var DataView = React.createClass(
 			var length = this.state.data.length;
 			var divStyle = { padding: '10px 15px'};
 
+			console.log("loading rows...");
+
 			var rows = $.makeArray(this.state.data)
 				.map(function(row, i) 
 			{
-				console.log("loading rows...");
 				if (i + 1 == length)
+				{
 					console.log("Bing!");
+				}
+
 				return (
-				<tr key={i}>
+					<tr key={i}>
 					{
 						Object.keys(row).map(function(key) 
 						{
 							if(row[key] && row[key].length > 80)
-								row[key] = row[key].substring(0, 75)+"...";
+								row[key] = row[key].substring(0, 75) + "...";
 
 							return <td className="trim-info" key={key}>{row[key]}</td>;
 						})
 					}
-				</tr>
-				);
+					</tr>
+				);		
 			});
 
-			/*
+			
 			var colNames = $.makeArray(this.state.data)
-				.map(function(row, i)
+				.map(function(row, i) 
 			{
-				console.log(this.state.data)
-				return (
-					<tr>
-					{
-						Object.keys(row[0]).map(function(key) {
-							console.log(key);
-							return <th key={key}>{key}</th>;
-						})
-					}
-					</tr>
-				);
-			}); */
+				if (i == 0)
+				{
+					return (
+						<tr key='heading'>
+						{
+							Object.keys(row).map(function(key) {
+								return <th key={key}><b><em>{key}</em></b></th>;
+							})
+						}
+						</tr>
+					);
+				}		
+			});
 
 			return (
 				<div className="col-sm-12">
@@ -363,7 +368,7 @@ var DataView = React.createClass(
 					<div className="datalist tableview">
 						<table className="col-sm-12">
 							<thead>
-								
+								{colNames}
 							</thead>
 							<tbody>
 								{rows}
