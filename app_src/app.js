@@ -1,17 +1,5 @@
 
-var nav = function(url, fn)
-{
-	var base = '';//"/amplite_r";
-	if (fn != null)
-	{
-		routie(base + url, fn);
-		return;
-	}
-	return function () {
-		console.log(base + url);
-    	routie(base + url);
- 	}	
-}
+/** Header component **/
 
 var Header = React.createClass(
 {
@@ -314,7 +302,7 @@ var Amplify = React.createClass(
 	    		console.log("single article");
 	    		console.log(id);
 	    		var mod = 
-	    			<div className="col-sm-12"><h3 onClick={nav('/')}>Single Page View for article {id}</h3></div>
+	    			<div className="col-sm-12">Single Page View for article {id}</div>
 	    		self.setState({ module: mod });		    	
 		    },
 		    '*': function() {
