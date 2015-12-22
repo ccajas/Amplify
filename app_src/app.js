@@ -144,7 +144,7 @@ var ContentEditable = React.createClass(
     render: function()
     {
         return (
-        	<div className={this.props.className} onInput={this.handleInput} onBlur={this.handleChange} 
+        	<div className={this.props.className} onInput={this.handleChange} 
         	contentEditable="true" dangerouslySetInnerHTML={{__html: this.props.html}}>
         	</div>
         );
@@ -166,7 +166,9 @@ var ContentEditable = React.createClass(
                 }
             });
         }
+
         this.lastHtml = html;
+        this.props._handleUpdate();       
     }
 });
 
@@ -179,32 +181,29 @@ var Sql = React.createClass(
     	return {query: ''};
   	},
 
-  	handleSqlChange: function(e) 
-  	{
-  		console.log('updated');
-    	this.setState({query: e.target.value});
-  	}.bind(this),
-
-  	componentDidUpdate: function() 
+	handleUpdate: function() 
 	{
-	},	
+		console.log("component update")
+		this.setState({ query: this.sqlInput.lastHtml })
+	},
 
 	render: function()
 	{
 		return (
 			<div>
-			<form name="QueryForm">
-				<fieldset>
-					<legend>Run SQL query</legend>
-					<button className="btn">Buttons</button>
-					<br/>
-					{this.state.query}
-					<ContentEditable className="console" placeholder="Enter your query here"/>
-					<br/>
-					<button className="btn" id="query_clear" onclick="return false">Clear</button>
-					<button className="btn btn-primary" id="query_btn" onclick="return false">Submit Query</button>
-				</fieldset>
-			</form>
+				<form name="QueryForm">
+					<fieldset>
+						<legend>Run SQL query</legend>
+						<button className="btn">Buttons</button>
+						<br/>
+						{this.state.query}
+						<ContentEditable className="console" html="Enter your query here" _handleUpdate={this.handleUpdate} 
+							ref={(ref) => this.sqlInput = ref} />
+						<br/>
+						<button className="btn" id="query_clear" onclick="return false">Clear</button>
+						<button className="btn btn-primary" id="query_btn" onclick="return false">Submit Query</button>
+					</fieldset>
+				</form>
 			</div>
 		);
 	}
