@@ -77,7 +77,8 @@ var App = React.createClass({
 			React.createElement(
 				"section",
 				{ className: "col-sm-2" },
-				React.createElement(SideNav, { url: this.props.sidenavUrl, dbname: this.props.dbname, _error: this._error })
+				React.createElement(SideNav, { url: this.props.sidenavUrl, dbname: this.props.dbname,
+					tablename: this.props.tablename, _error: this._error })
 			),
 			React.createElement(
 				"section",
@@ -242,7 +243,7 @@ var SideNav = React.createClass({
 			React.createElement(
 				"ul",
 				{ className: "nav" },
-				React.createElement(SideNavTools, { dbname: self.props.dbname }),
+				React.createElement(SideNavTools, { dbname: self.props.dbname, tablename: self.props.tablename }),
 				React.createElement(SideNavDatalist, { heading: navheading, data: this.state.data, data: datalist })
 			)
 		);
@@ -253,43 +254,90 @@ var SideNavTools = React.createClass({
 	displayName: "SideNavTools",
 
 	render: function () {
-		return React.createElement(
-			"li",
-			{ className: "tools" },
-			React.createElement(
-				"div",
+		var operations;
+		console.log("SideNavTools props");
+		console.log(this.props);
+
+		// If we are viewing a table, load table operations
+		if (this.props.tablename) {
+			operations = React.createElement(
+				"li",
 				null,
-				"Tools"
+				React.createElement(
+					"a",
+					{ href: '#/db/' + this.props.dbname + '/table/' + this.props.tablename },
+					"View Structure"
+				)
+			);
+		}
+		// Else, load database operations
+		else {
+				operations = React.createElement(
+					"li",
+					null,
+					React.createElement(
+						"a",
+						{ href: '#/insert/' + this.props.dbname },
+						"Insert Table"
+					)
+				);
+			}
+
+		return React.createElement(
+			"div",
+			null,
+			React.createElement(
+				"li",
+				{ className: "tools" },
+				React.createElement(
+					"div",
+					null,
+					"Tools"
+				),
+				React.createElement(
+					"ul",
+					{ className: "subnav" },
+					React.createElement(
+						"li",
+						null,
+						React.createElement(
+							"a",
+							{ href: '#/db/' + this.props.dbname + '/sql' },
+							"SQL command"
+						)
+					),
+					React.createElement(
+						"li",
+						null,
+						React.createElement(
+							"a",
+							{ href: '#/db/' + this.props.dbname + '/import' },
+							"Import"
+						)
+					),
+					React.createElement(
+						"li",
+						null,
+						React.createElement(
+							"a",
+							{ href: '#/db/' + this.props.dbname + '/export' },
+							"Export"
+						)
+					)
+				)
 			),
 			React.createElement(
-				"ul",
-				{ className: "subnav" },
+				"li",
+				{ className: "operations" },
 				React.createElement(
-					"li",
+					"div",
 					null,
-					React.createElement(
-						"a",
-						{ href: '#/db/' + this.props.dbname + '/sql' },
-						"SQL command"
-					)
+					"Operations"
 				),
 				React.createElement(
-					"li",
-					null,
-					React.createElement(
-						"a",
-						{ href: '#/db/' + this.props.dbname + '/import' },
-						"Import"
-					)
-				),
-				React.createElement(
-					"li",
-					null,
-					React.createElement(
-						"a",
-						{ href: '#/db/' + this.props.dbname + '/export' },
-						"Export"
-					)
+					"ul",
+					{ className: "subnav" },
+					operations
 				)
 			)
 		);
@@ -349,6 +397,12 @@ var DataView = React.createClass({
 				this.props._error(xhr.responseJSON.request.message);
 			}).bind(this)
 		});
+
+		// Scroll to top
+		//window.scrollTo(0, 0);
+
+		// Or smooth scroll
+		$("html, body").animate({ scrollTop: 0 }, 400);
 	},
 
 	componentDidMount: function () {
@@ -388,19 +442,19 @@ var DataView = React.createClass({
 
 			/*
    var colNames = $.makeArray(this.state.data)
-   .map(function(row, i)
+   	.map(function(row, i)
    {
-   console.log(this.state.data)
-   return (
-         	<tr>
-         	{
-         		Object.keys(row[0]).map(function(key) {
-         			console.log(key);
-             		return <th key={key}>{key}</th>;
-           		})
-         	}
-        		</tr>
-       	);
+   	console.log(this.state.data)
+   	return (
+          	<tr>
+          	{
+          		Object.keys(row[0]).map(function(key) {
+          			console.log(key);
+              		return <th key={key}>{key}</th>;
+            		})
+          	}
+         		</tr>
+        	);
    }); */
 
 			return React.createElement(
