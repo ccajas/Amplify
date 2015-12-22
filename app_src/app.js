@@ -1,10 +1,4 @@
 
-var dummyData = 
-[
-	{ id: 1, title: "First", author: "Pete Hunt", text: "Placeholder text", extra: "..." },
-	{ id: 2, title: "Another", author: "Jordan Walke", text: "Placeholder text", extra: "..." }
-];
-
 var nav = function(url, fn)
 {
 	var base = '';//"/amplite_r";
@@ -42,36 +36,38 @@ var App = React.createClass(
 {
   	getInitialState: function() 
   	{
-    	return { data: dummyData, errors: [] };
+    	return { data: [], errors: [] };
   	},
 
-  	loadData: function()
+  	/*loadData: function()
   	{
   		console.log("load app data")
+  		this.setState({ data: [] });
   	    $.ajax({
 			url: this.props.url,
 			dataType: 'json',
 			cache: false,
 			success: function(newData) {
+				this.setState({data: []})
 				console.log("New data loaded")
-				this.setState({data: newData.request});
 			}.bind(this),
 
 			error: function(xhr, status, err) {
 				this._error(xhr.responseJSON.request.message);
-			}.bind(this)
+			}.bind(this),
+
+			complete: function(newData) {
+				console.log("Data complete")
+				console.log(newData.responseJSON)
+				this.setState({data: newData.responseJSON.request });
+			}.bind(this),
 		});
   	},
 
-  	componentDidMount: function() 
+  	componentDidMount: function(nextProps) 
   	{
 		this.loadData();
-	},
-
-	componentWillUnmount: function() 
-	{
-    	//this.intervals.map(clearInterval);
-  	},
+	},*/
 
 	_error: function (errorMsg)
 	{
@@ -86,15 +82,15 @@ var App = React.createClass(
 
 	render: function() 
 	{
+		console.log("rendering app view...")
 		var module = '';
 
 		if (this.props.module === 'home')
 			module = <Home webserver={this.state.data} _error={this._error}/>;
 
 		if (this.props.module === 'dataview')
-			module = <DataView datatype={this.props.datatype} data={this.state.data} _error={this._error}/>;
-
-		console.log('App render')
+			module = <DataView datatype={this.props.datatype} url={this.props.url}
+				dbname={this.props.dbname} _error={this._error}/>;
 
 		return (
 			<div className="row-fluid">
@@ -124,11 +120,6 @@ var App = React.createClass(
 
 var Home = React.createClass(
 {
-	getInitialState: function()
-	{
-		return { data: '' }
-	},
-
 	render: function()
 	{
 		var extensions = $.makeArray(this.props.webserver.extensions);
@@ -164,8 +155,9 @@ var SideNav = React.createClass(
 			cache: false,
 			success: function(data) {
 				this.setState({ 
-					data: data.request.rows, dbname: this.props.dbname}
-				);
+					data: data.request.rows, 
+					dbname: this.props.dbname
+				});
 			}.bind(this),
 
 			error: function(xhr, status, err) {
@@ -251,15 +243,121 @@ var SideNavDatalist = React.createClass(
 
 var DataView = React.createClass(
 {
+  	getInitialState: function() 
+  	{
+    	return { data: [], dbname: ''};
+  	},
+
+  	loadData: function()
+  	{
+  	    $.ajax({
+			url: this.props.url,
+			dataType: 'json',
+			cache: false,
+			success: function(data) {
+				console.log(data);
+				this.setState({ 
+					data: data.request.rows, 
+					dbname: this.props.dbname
+				});
+			}.bind(this),
+
+			error: function(xhr, status, err) {
+				this.props._error(xhr.responseJSON.request.message);
+			}.bind(this)
+		});
+  	},
+
+  	componentDidMount: function() 
+  	{
+		this.loadData();
+	},
+
+  	componentDidUpdate: function() 
+  	{
+  		if (this.state.dbname != this.props.dbname)
+			this.loadData();
+	},
+
 	render: function()
 	{
-		return (
-			<div className="col-sm-12">
-				<h3>Data View</h3>
-				<h3>{this.props.datatype}: <em>{this.props.structureName}</em></h3>
-				<h4 className="sub">...{this.props.datatype} found</h4>
-			</div>
-		)
+		console.log("rendering dataview...");
+
+		var divStyle = { padding: '10px 15px'};
+
+		if (this.state.data)
+		{
+			var rows = $.makeArray(this.state.data)
+				.map(function(row, i) 
+		    {
+		      	return (
+		        <tr key={i}>
+		        	{
+		        		Object.keys(row).map(function(key) {
+	                		return <td className="trim-info" key={key}>{row[key]}</td>;
+	              		})
+		        	}
+		        </tr>
+		      	);
+		    });
+
+			var dataRow = $.makeArray(this.state.data)
+
+			var colNames = function()
+			{
+				return (
+		        	<tr>
+		        	{
+		        		Object.keys(dataRow[0]).map(function(key) {
+		            		return <th key={key}>{key}</th>;
+		          		})
+		        	}
+	        		</tr>
+		      	);
+			}
+
+			return (
+				<div className="col-sm-12">
+					<h3>Data View</h3>
+					<h3>{this.props.datatype}: <em>{this.props.structureName}</em></h3>
+					<h4 className="sub">{rows.length} {this.props.datatype}
+					{rows.length == 1 ? '' : 's'}</h4>
+
+					<div className="row">
+						<h3 className="col-sm-12">{this.props.datatype}s</h3>
+
+						<div className="col-sm-8 pull-left optiontabs">
+							<h4 className="sub">With Selected: &nbsp;
+							<button className="btn">Edit</button>&nbsp;
+							<button className="btn">Analyze</button>&nbsp;
+							<button className="btn">Check</button>&nbsp;
+							<button className="btn">Optimize</button>
+							</h4>
+						</div>
+						<div className="col-sm-4 pull-right" style={divStyle}>
+							<input placeholder="Search in..."/>
+						</div>
+					</div>
+
+					<table className="datalist">
+						<thead>
+							{colNames}
+						</thead>
+						<tbody>
+							{rows}
+						</tbody>
+					</table>
+				</div>
+			)
+		}
+		else
+		{
+			return (
+				<div className="col-sm-12">
+					<h4>Loading...</h4>
+				</div>
+			)
+		}
 	}
 })
 
@@ -286,8 +384,11 @@ var Amplify = React.createClass(
 	    		console.log("home");
 
 	    		self.setState({ 
-	    			app: <App module='home' url={api('webserver')} 
-	    				sidenavUrl={api('show/databases/mysql')} dbname=''/> 
+	    			app: <App 
+	    				module='home' 
+	    				url={api('webserver')} 
+	    				sidenavUrl={api('show/databases/mysql')} 
+	    				dbname='' /> 
 	    		});
 		    },
 		    '/db/:dbname': function(dbname)
@@ -295,8 +396,12 @@ var Amplify = React.createClass(
 		    	console.log("show tables from "+ dbname);	    	
 
 	    		self.setState({ 
-	    			app: <App module='dataview' url={api('list/articles')} 
-	    				sidenavUrl={api('show/tables/'+ dbname)} dbname={dbname} /> 
+	    			app: <App 
+	    				module='dataview' 
+	    				url={api('show/tables/'+ dbname)} 
+	    				datatype='Table'
+	    				sidenavUrl={api('show/tables/'+ dbname)} 
+	    				name={dbname} /> 
 	    		});	    	
 		    },
 		    '/article/:id': function(id)

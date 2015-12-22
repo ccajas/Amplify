@@ -1,4 +1,5 @@
 .DS_Store
+api/v1/config.php
 _misc
 _libs_dev
 bower_components
