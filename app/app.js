@@ -53,33 +53,6 @@ var App = React.createClass({
 		return { data: [], errors: [] };
 	},
 
-	/*loadData: function()
- {
- 	console.log("load app data")
- 	this.setState({ data: [] });
-     $.ajax({
- url: this.props.url,
- dataType: 'json',
- cache: false,
- success: function(newData) {
- 	this.setState({data: []})
- 	console.log("New data loaded")
- }.bind(this),
- 	error: function(xhr, status, err) {
- 	this._error(xhr.responseJSON.request.message);
- }.bind(this),
- 	complete: function(newData) {
- 	console.log("Data complete")
- 	console.log(newData.responseJSON)
- 	this.setState({data: newData.responseJSON.request });
- }.bind(this),
- });
- },
- 	componentDidMount: function(nextProps) 
- {
- this.loadData();
- },*/
-
 	_error: function (errorMsg) {
 		var errors = this.state.errors;
 
@@ -411,21 +384,24 @@ var DataView = React.createClass({
 				);
 			});
 
-			var dataRow = $.makeArray(this.state.data);
+			console.log(this.state.data);
 
-			var colNames = function () {
-				return React.createElement(
-					"tr",
-					null,
-					Object.keys(dataRow[0]).map(function (key) {
-						return React.createElement(
-							"th",
-							{ key: key },
-							key
-						);
-					})
-				);
-			};
+			/*
+   var colNames = $.makeArray(this.state.data)
+   .map(function(row, i)
+   {
+   console.log(this.state.data)
+   return (
+         	<tr>
+         	{
+         		Object.keys(row[0]).map(function(key) {
+         			console.log(key);
+             		return <th key={key}>{key}</th>;
+           		})
+         	}
+        		</tr>
+       	);
+   }); */
 
 			return React.createElement(
 				"div",
@@ -433,17 +409,11 @@ var DataView = React.createClass({
 				React.createElement(
 					"h3",
 					null,
-					"Data View"
-				),
-				React.createElement(
-					"h3",
-					null,
-					this.props.datatype,
-					": ",
+					this.props.tablename ? 'Table: ' : 'Database: ',
 					React.createElement(
 						"em",
 						null,
-						this.props.structureName
+						this.props.tablename ? this.props.tablename : this.props.dbname
 					)
 				),
 				React.createElement(
@@ -507,11 +477,7 @@ var DataView = React.createClass({
 					React.createElement(
 						"table",
 						{ className: "col-sm-12" },
-						React.createElement(
-							"thead",
-							null,
-							colNames
-						),
+						React.createElement("thead", null),
 						React.createElement(
 							"tbody",
 							null,
