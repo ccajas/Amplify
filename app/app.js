@@ -31,6 +31,8 @@ var App = React.createClass({
 		if (this.props.module === 'dataview') module = React.createElement(DataView, { datatype: this.props.datatype, url: this.state.url,
 			dbname: this.props.dbname, tablename: this.props.tablename, _error: this._error });
 
+		if (this.props.module === 'sql') module = React.createElement(Sql, { dbname: this.props.dbname, _error: this._error });
+
 		return React.createElement(
 			'div',
 			{ className: 'row-fluid' },
@@ -193,6 +195,89 @@ var Home = React.createClass({
 	}
 });
 
+/** Contenteditable component **/
+
+var ContentEditable = React.createClass({
+	displayName: 'ContentEditable',
+
+	render: function () {
+		return React.createElement('div', { className: this.props.className, onInput: this.handleInput, onBlur: this.handleChange,
+			contentEditable: 'true', dangerouslySetInnerHTML: { __html: this.props.html } });
+	},
+
+	shouldComponentUpdate: function (nextProps) {
+		return nextProps.html !== this.getDOMNode().innerHTML;
+	},
+
+	handleChange: function () {
+		var html = this.getDOMNode().innerHTML;
+		if (this.props.onChange && html !== this.lastHtml) {
+			this.props.onChange({
+				target: {
+					value: html
+				}
+			});
+		}
+		this.lastHtml = html;
+	}
+});
+
+/** SQL Module **/
+
+var Sql = React.createClass({
+	displayName: 'Sql',
+
+	getInitialState: function () {
+		return { query: '' };
+	},
+
+	handleSqlChange: (function (e) {
+		console.log('updated');
+		this.setState({ query: e.target.value });
+	}).bind(this),
+
+	componentDidUpdate: function () {},
+
+	render: function () {
+		return React.createElement(
+			'div',
+			null,
+			React.createElement(
+				'form',
+				{ name: 'QueryForm' },
+				React.createElement(
+					'fieldset',
+					null,
+					React.createElement(
+						'legend',
+						null,
+						'Run SQL query'
+					),
+					React.createElement(
+						'button',
+						{ className: 'btn' },
+						'Buttons'
+					),
+					React.createElement('br', null),
+					this.state.query,
+					React.createElement(ContentEditable, { className: 'console', placeholder: 'Enter your query here' }),
+					React.createElement('br', null),
+					React.createElement(
+						'button',
+						{ className: 'btn', id: 'query_clear', onclick: 'return false' },
+						'Clear'
+					),
+					React.createElement(
+						'button',
+						{ className: 'btn btn-primary', id: 'query_btn', onclick: 'return false' },
+						'Submit Query'
+					)
+				)
+			)
+		);
+	}
+});
+
 /** DataView Module **/
 
 var DataView = React.createClass({
@@ -226,7 +311,7 @@ var DataView = React.createClass({
 		//window.scrollTo(0, 0);
 
 		// Or smooth scroll
-		$("html, body").animate({ scrollTop: 0 }, 400);
+		//$("html, body").animate({ scrollTop: 0 }, 400);
 	},
 
 	componentDidMount: function () {
@@ -405,6 +490,18 @@ var Amplify = React.createClass({
 						dbname: '' })
 				});
 			},
+			'/db/:dbname/:action': function (dbname, action) {
+				console.log("show tables from " + dbname);
+
+				self.setState({
+					app: React.createElement(App, {
+						module: action,
+						url: api('show/tables/' + dbname),
+						datatype: 'Table',
+						sidenavUrl: api('show/tables/' + dbname),
+						dbname: dbname })
+				});
+			},
 			'/db/:dbname': function (dbname) {
 				console.log("show tables from " + dbname);
 
@@ -425,6 +522,20 @@ var Amplify = React.createClass({
 						module: 'dataview',
 						url: api('show/columns/' + dbname + '.' + tablename),
 						datatype: 'Column',
+						sidenavUrl: api('show/tables/' + dbname),
+						dbname: dbname,
+						tablename: tablename })
+				});
+			},
+			'/db/:dbname/:action/:tablename': function (dbname, action, tablename) {
+				console.log("select from " + dbname + '.' + tablename);
+				var module = action == 'select' ? 'dataview' : module;
+
+				self.setState({
+					app: React.createElement(App, {
+						module: 'dataview',
+						url: api('select/' + dbname + '.' + tablename),
+						datatype: 'Row',
 						sidenavUrl: api('show/tables/' + dbname),
 						dbname: dbname,
 						tablename: tablename })
