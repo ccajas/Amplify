@@ -1,8 +1,5 @@
-"use strict";
 
-var dummyData = [{ id: 1, title: "First", author: "Pete Hunt", text: "Placeholder text", extra: "..." }, { id: 2, title: "Another", author: "Jordan Walke", text: "Placeholder text", extra: "..." }];
-
-var nav = function nav(url, fn) {
+var nav = function (url, fn) {
 	var base = ''; //"/amplite_r";
 	if (fn != null) {
 		routie(base + url, fn);
@@ -17,7 +14,7 @@ var nav = function nav(url, fn) {
 var Header = React.createClass({
 	displayName: "Header",
 
-	render: function render() {
+	render: function () {
 		return React.createElement(
 			"header",
 			{ className: "container-fluid" },
@@ -52,55 +49,54 @@ var Header = React.createClass({
 var App = React.createClass({
 	displayName: "App",
 
-	getInitialState: function getInitialState() {
-		return { data: dummyData };
+	getInitialState: function () {
+		return { data: [], errors: [] };
 	},
 
-	loadData: function loadData() {
-		$.ajax({
-			url: this.props.url,
-			dataType: 'json',
-			cache: false,
-			success: (function (newData) {
-				this.setState({ data: newData.request });
-			}).bind(this),
+	/*loadData: function()
+ {
+ 	console.log("load app data")
+ 	this.setState({ data: [] });
+     $.ajax({
+ url: this.props.url,
+ dataType: 'json',
+ cache: false,
+ success: function(newData) {
+ 	this.setState({data: []})
+ 	console.log("New data loaded")
+ }.bind(this),
+ 	error: function(xhr, status, err) {
+ 	this._error(xhr.responseJSON.request.message);
+ }.bind(this),
+ 	complete: function(newData) {
+ 	console.log("Data complete")
+ 	console.log(newData.responseJSON)
+ 	this.setState({data: newData.responseJSON.request });
+ }.bind(this),
+ });
+ },
+ 	componentDidMount: function(nextProps) 
+ {
+ this.loadData();
+ },*/
 
-			error: (function (xhr, status, err) {
-				console.error("this.props.url:", status, err.toString());
-			}).bind(this)
-		});
+	_error: function (errorMsg) {
+		var errors = this.state.errors;
+
+		if (errors.indexOf(errorMsg) < 0) {
+			errors.push(errorMsg);
+			this.setState({ errors: errors });
+		}
 	},
 
-	componentDidMount: function componentDidMount() {
-		this.loadData();
-	},
-
-	componentWillUnmount: function componentWillUnmount() {
-		//this.intervals.map(clearInterval);
-	},
-
-	_update: function _update(val) {
-		this.state.data.push(val);
-		this.setState({ data: this.state.data });
-	},
-
-	_error: function _error() {},
-
-	render: function render() {
+	render: function () {
+		console.log("rendering app view...");
 		var module = '';
-		var error = '';
 
-		if (this.props.module === 'articleList') module = React.createElement(ArticleList, { articlesTitle: "Latest Articles", data: this.state.data, data: articles,
-			_update: this._update });
+		if (this.props.module === 'home') module = React.createElement(Home, { webserver: this.state.data, _error: this._error });
 
-		if (this.props.module === 'singleArticle') module = React.createElement(Article, { data: articles });
-
-		if (this.props.module === 'home') module = React.createElement(Home, { webserver: this.state.data });
-
-		if (this.props.module === 'dataview') module = React.createElement(DataView, { datatype: this.props.datatype, data: this.state.data });
-
-		// Append error function for sidenav use
-		this.props.sidenav.props._displayError = this._error;
+		if (this.props.module === 'dataview') module = React.createElement(DataView, { datatype: this.props.datatype, url: this.props.url,
+			dbname: this.props.dbname, _error: this._error });
 
 		return React.createElement(
 			"div",
@@ -108,17 +104,30 @@ var App = React.createClass({
 			React.createElement(
 				"section",
 				{ className: "col-sm-2" },
-				this.props.sidenav
+				React.createElement(SideNav, { url: this.props.sidenavUrl, dbname: this.props.dbname, _error: this._error })
 			),
 			React.createElement(
 				"section",
 				{ className: "col-sm-10" },
-				React.createElement(
-					"div",
-					null,
-					this.props.module,
-					React.createElement("br", null)
-				)
+				(() => {
+					if (this.state.errors.length) return React.createElement(
+						"div",
+						{ className: "col-sm-12" },
+						React.createElement("br", null),
+						React.createElement(
+							"h4",
+							null,
+							"The following errors have been found:"
+						),
+						React.createElement("br", null),
+						React.createElement(
+							"p",
+							{ className: "alert alert-danger" },
+							this.state.errors
+						)
+					);
+				})(),
+				module
 			)
 		);
 	}
@@ -129,7 +138,7 @@ var App = React.createClass({
 var Home = React.createClass({
 	displayName: "Home",
 
-	render: function render() {
+	render: function () {
 		var extensions = $.makeArray(this.props.webserver.extensions);
 
 		return React.createElement(
@@ -191,49 +200,48 @@ var Home = React.createClass({
 var SideNav = React.createClass({
 	displayName: "SideNav",
 
-	getInitialState: function getInitialState() {
+	getInitialState: function () {
 		return { data: [], dbname: '' };
 	},
 
-	loadData: function loadData() {
-		console.log('load sidebar');
-
+	loadData: function () {
 		$.ajax({
 			url: this.props.url,
 			dataType: 'json',
 			cache: false,
 			success: (function (data) {
 				this.setState({
-					data: data.request.rows, dbname: this.props.dbname });
+					data: data.request.rows,
+					dbname: this.props.dbname
+				});
 			}).bind(this),
 
 			error: (function (xhr, status, err) {
-				this.props._displayError(xhr.responseJSON.message);
-				console.error("this.props.url:", status, err.toString());
+				this.props._error(xhr.responseJSON.request.message);
 			}).bind(this)
 		});
 	},
 
-	componentDidMount: function componentDidMount() {
+	componentDidMount: function () {
 		this.loadData();
 	},
 
-	componentDidUpdate: function componentDidUpdate() {
+	componentDidUpdate: function () {
 		if (this.state.dbname != this.props.dbname) this.loadData();
 	},
 
-	render: function render() {
+	render: function () {
 		var self = this;
 		var navheading = self.props.dbname ? self.props.dbname : 'Databases';
 
 		// Get list of tables/databases
-		var datalist = this.state.data.map(function (item) {
+		var datalist = this.state.data.map(function (item, i) {
 			var itemEntry = self.props.dbname ? item.Table : item.Database;
 
 			// Return appropriate link based on item type
 			return self.props.dbname ? React.createElement(
 				"li",
-				null,
+				{ key: i },
 				React.createElement(
 					"a",
 					{ href: '#/db/' + self.props.dbname + '/table/' + itemEntry },
@@ -241,7 +249,7 @@ var SideNav = React.createClass({
 				)
 			) : React.createElement(
 				"li",
-				null,
+				{ key: i },
 				React.createElement(
 					"a",
 					{ href: '#/db/' + itemEntry },
@@ -271,7 +279,7 @@ var SideNav = React.createClass({
 var SideNavTools = React.createClass({
 	displayName: "SideNavTools",
 
-	render: function render() {
+	render: function () {
 		return React.createElement(
 			"li",
 			{ className: "tools" },
@@ -318,7 +326,7 @@ var SideNavTools = React.createClass({
 var SideNavDatalist = React.createClass({
 	displayName: "SideNavDatalist",
 
-	render: function render() {
+	render: function () {
 		return React.createElement(
 			"li",
 			null,
@@ -346,71 +354,219 @@ var SideNavDatalist = React.createClass({
 var DataView = React.createClass({
 	displayName: "DataView",
 
-	render: function render() {
-		return React.createElement(
-			"div",
-			{ className: "col-sm-12" },
-			React.createElement(
-				"h3",
-				null,
-				"Data View"
-			),
-			React.createElement(
-				"h3",
-				null,
-				this.props.datatype,
-				": ",
-				React.createElement(
-					"em",
+	getInitialState: function () {
+		return { data: [], dbname: '' };
+	},
+
+	loadData: function () {
+		$.ajax({
+			url: this.props.url,
+			dataType: 'json',
+			cache: false,
+			success: (function (data) {
+				console.log(data);
+				this.setState({
+					data: data.request.rows,
+					dbname: this.props.dbname
+				});
+			}).bind(this),
+
+			error: (function (xhr, status, err) {
+				this.props._error(xhr.responseJSON.request.message);
+			}).bind(this)
+		});
+	},
+
+	componentDidMount: function () {
+		this.loadData();
+	},
+
+	componentDidUpdate: function () {
+		if (this.state.dbname != this.props.dbname) {
+			console.log('did update new db');
+			this.loadData();
+		}
+	},
+
+	render: function () {
+		console.log("rendering dataview...");
+
+		var divStyle = { padding: '10px 15px' };
+
+		if (this.state.data) {
+			var rows = $.makeArray(this.state.data).map(function (row, i) {
+				return React.createElement(
+					"tr",
+					{ key: i },
+					Object.keys(row).map(function (key) {
+						return React.createElement(
+							"td",
+							{ className: "trim-info", key: key },
+							row[key]
+						);
+					})
+				);
+			});
+
+			var dataRow = $.makeArray(this.state.data);
+
+			var colNames = function () {
+				return React.createElement(
+					"tr",
 					null,
-					this.props.structureName
+					Object.keys(dataRow[0]).map(function (key) {
+						return React.createElement(
+							"th",
+							{ key: key },
+							key
+						);
+					})
+				);
+			};
+
+			return React.createElement(
+				"div",
+				{ className: "col-sm-12" },
+				React.createElement(
+					"h3",
+					null,
+					"Data View"
+				),
+				React.createElement(
+					"h3",
+					null,
+					this.props.datatype,
+					": ",
+					React.createElement(
+						"em",
+						null,
+						this.props.structureName
+					)
+				),
+				React.createElement(
+					"h4",
+					{ className: "sub" },
+					rows.length,
+					" ",
+					this.props.datatype,
+					rows.length == 1 ? '' : 's'
+				),
+				React.createElement(
+					"div",
+					{ className: "row" },
+					React.createElement(
+						"h3",
+						{ className: "col-sm-12" },
+						this.props.datatype,
+						"s"
+					),
+					React.createElement(
+						"div",
+						{ className: "col-sm-8 pull-left optiontabs" },
+						React.createElement(
+							"h4",
+							{ className: "sub" },
+							"With Selected:  ",
+							React.createElement(
+								"button",
+								{ className: "btn" },
+								"Edit"
+							),
+							" ",
+							React.createElement(
+								"button",
+								{ className: "btn" },
+								"Analyze"
+							),
+							" ",
+							React.createElement(
+								"button",
+								{ className: "btn" },
+								"Check"
+							),
+							" ",
+							React.createElement(
+								"button",
+								{ className: "btn" },
+								"Optimize"
+							)
+						)
+					),
+					React.createElement(
+						"div",
+						{ className: "col-sm-4 pull-right", style: divStyle },
+						React.createElement("input", { placeholder: "Search in..." })
+					)
+				),
+				React.createElement(
+					"table",
+					{ className: "datalist" },
+					React.createElement(
+						"thead",
+						null,
+						colNames
+					),
+					React.createElement(
+						"tbody",
+						null,
+						rows
+					)
 				)
-			),
-			React.createElement(
-				"h4",
-				{ "class": "sub" },
-				"...",
-				this.props.datatype,
-				" found"
-			)
-		);
+			);
+		} else {
+			return React.createElement(
+				"div",
+				{ className: "col-sm-12" },
+				React.createElement(
+					"h4",
+					null,
+					"Loading..."
+				)
+			);
+		}
 	}
 });
 
 var Amplify = React.createClass({
 	displayName: "Amplify",
 
-	getInitialState: function getInitialState() {
+	getInitialState: function () {
 		console.log('Setup amplify');
 		return { app: React.createElement("div", null) };
 	},
 
-	componentDidMount: function componentDidMount() {
+	componentDidMount: function () {
 		var self = this;
-		var api = function api(path) {
+		var api = function (path) {
 			return self.props.api_src + path;
 		};
 
 		routie({
 			// load the main module in the home page		
-			'': function _() {
+			'': function () {
 				console.log("home");
-				var sidenav = React.createElement(SideNav, { url: api('show/databases/mysql'), dbname: "" });
 
 				self.setState({
-					app: React.createElement(App, { url: api('webserver'), module: "home", sidenav: sidenav })
+					app: React.createElement(App, {
+						module: "home",
+						url: api('webserver'),
+						sidenavUrl: api('show/databases/mysql'),
+						dbname: "" })
 				});
 			},
-			'/db/:dbname': function dbDbname(dbname) {
+			'/db/:dbname': function (dbname) {
 				console.log("show tables from " + dbname);
-				var sidenav = React.createElement(SideNav, { url: api('show/tables/' + dbname), dbname: dbname });
-				var module = React.createElement(DataView, { datatype: "Tables" });
 
 				self.setState({
-					app: React.createElement(App, { url: api('list/articles'), module: module, sidenav: sidenav })
+					app: React.createElement(App, {
+						module: "dataview",
+						url: api('show/tables/' + dbname),
+						datatype: "Table",
+						sidenavUrl: api('show/tables/' + dbname),
+						dbname: dbname })
 				});
 			},
-			'/article/:id': function articleId(id) {
+			'/article/:id': function (id) {
 				console.log("single article");
 				console.log(id);
 				var mod = React.createElement(
@@ -425,15 +581,14 @@ var Amplify = React.createClass({
 				);
 				self.setState({ module: mod });
 			},
-			'*': function _() {
+			'*': function () {
 				// default: go to landing page
 				routie('');
 			}
 		});
 	},
 
-	render: function render() {
-		console.log(this.state);
+	render: function () {
 		return React.createElement(
 			"div",
 			null,
