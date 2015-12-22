@@ -74,6 +74,7 @@ var SideNav = React.createClass({
 				'ul',
 				{ className: 'nav' },
 				React.createElement(SideNavTools, { dbname: self.props.dbname, tablename: self.props.tablename }),
+				React.createElement(SideNavOperations, { dbname: self.props.dbname, tablename: self.props.tablename }),
 				React.createElement(SideNavDatalist, { heading: navheading, data: this.state.data, data: datalist })
 			)
 		);
@@ -87,6 +88,55 @@ var SideNavTools = React.createClass({
 		var operations;
 		console.log("SideNavTools props");
 		console.log(this.props);
+
+		return React.createElement(
+			'li',
+			{ className: 'tools' },
+			React.createElement(
+				'div',
+				null,
+				'Tools'
+			),
+			React.createElement(
+				'ul',
+				{ className: 'subnav' },
+				React.createElement(
+					'li',
+					null,
+					React.createElement(
+						'a',
+						{ href: '#/db/' + this.props.dbname + '/sql' },
+						'SQL command'
+					)
+				),
+				React.createElement(
+					'li',
+					null,
+					React.createElement(
+						'a',
+						{ href: '#/db/' + this.props.dbname + '/import' },
+						'Import'
+					)
+				),
+				React.createElement(
+					'li',
+					null,
+					React.createElement(
+						'a',
+						{ href: '#/db/' + this.props.dbname + '/export' },
+						'Export'
+					)
+				)
+			)
+		);
+	}
+});
+
+var SideNavOperations = React.createClass({
+	displayName: 'SideNavOperations',
+
+	render: function () {
+		var operations;
 
 		// If we are viewing a table, load table operations
 		if (this.props.tablename) {
@@ -114,61 +164,17 @@ var SideNavTools = React.createClass({
 			}
 
 		return React.createElement(
-			'div',
-			null,
+			'li',
+			{ className: 'operations' },
 			React.createElement(
-				'li',
-				{ className: 'tools' },
-				React.createElement(
-					'div',
-					null,
-					'Tools'
-				),
-				React.createElement(
-					'ul',
-					{ className: 'subnav' },
-					React.createElement(
-						'li',
-						null,
-						React.createElement(
-							'a',
-							{ href: '#/db/' + this.props.dbname + '/sql' },
-							'SQL command'
-						)
-					),
-					React.createElement(
-						'li',
-						null,
-						React.createElement(
-							'a',
-							{ href: '#/db/' + this.props.dbname + '/import' },
-							'Import'
-						)
-					),
-					React.createElement(
-						'li',
-						null,
-						React.createElement(
-							'a',
-							{ href: '#/db/' + this.props.dbname + '/export' },
-							'Export'
-						)
-					)
-				)
+				'div',
+				null,
+				'Operations'
 			),
 			React.createElement(
-				'li',
-				{ className: 'operations' },
-				React.createElement(
-					'div',
-					null,
-					'Operations'
-				),
-				React.createElement(
-					'ul',
-					{ className: 'subnav' },
-					operations
-				)
+				'ul',
+				{ className: 'subnav' },
+				operations
 			)
 		);
 	}
