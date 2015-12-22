@@ -22,14 +22,14 @@ var Header = React.createClass(
 
 var App = React.createClass(
 {
-  	getInitialState: function() 
-  	{
-    	return { data: [], url: this.props.url, errors: [] };
-  	},
+	getInitialState: function() 
+	{
+		return { data: [], url: this.props.url, errors: [] };
+	},
 
-  	componentDidUpdate: function() 
-  	{
-  		if (this.state.url != this.props.url)
+	componentDidUpdate: function() 
+	{
+		if (this.state.url != this.props.url)
 			this.setState({ url: this.props.url })
 	},
 
@@ -59,23 +59,24 @@ var App = React.createClass(
 		return (
 			<div className="row-fluid">
 				<section className="col-sm-2">
-	    			<SideNav url={this.props.sidenavUrl} dbname={this.props.dbname}
-	    				tablename={this.props.tablename} _error={this._error}/>
+					<SideNav url={this.props.sidenavUrl} dbname={this.props.dbname}
+						tablename={this.props.tablename} _error={this._error}/>
 				</section>
-				<section className="col-sm-10">
-					{
-						(() => {
-							if (this.state.errors.length)
-  							return (
-  								<div className="col-sm-12">
-									<br/><h4>The following errors have been found:</h4><br/>
-									<p className="alert alert-danger">{this.state.errors}</p>
-								</div>
+				{
+					(() => {
+						if (this.state.errors.length)
+							return (
+								<section className="col-sm-10">
+									<div className="col-sm-12">
+										<br/><h4>The following errors have been found:</h4><br/>
+										<p className="alert alert-danger">{this.state.errors}</p>
+									</div>
+								</section>
 							)
-						})
-					()}
-					{module}
-				</section>
+						else
+							return <section className="col-sm-10">{module}</section>
+					})
+				()}
 			</div>
 		);
 	}
@@ -107,14 +108,14 @@ var Home = React.createClass(
 
 var DataView = React.createClass(
 {
-  	getInitialState: function() 
-  	{
-    	return { data: [], url: '', dbname: '', tablename: ''};
-  	},
+	getInitialState: function() 
+	{
+		return { data: [], url: '', dbname: '', tablename: ''};
+	},
 
-  	loadData: function()
-  	{
-  	    $.ajax({
+	loadData: function()
+	{
+		$.ajax({
 			url: this.props.url,
 			dataType: 'json',
 			cache: false,
@@ -138,18 +139,18 @@ var DataView = React.createClass(
 
 		// Or smooth scroll
 		$("html, body").animate({ scrollTop: 0 }, 400);
-  	},
+	},
 
-  	componentDidMount: function() 
-  	{
+	componentDidMount: function() 
+	{
 		this.loadData();
 	},
 
-  	componentDidUpdate: function() 
-  	{
-  		if (this.state.url != this.props.url)
-  		{
-  			console.log("refresh dataview data")
+	componentDidUpdate: function() 
+	{
+		if (this.state.url != this.props.url)
+		{
+			console.log("refresh dataview data")
 			this.loadData();
 		}
 	},
@@ -164,21 +165,21 @@ var DataView = React.createClass(
 		{
 			var rows = $.makeArray(this.state.data)
 				.map(function(row, i) 
-		    {
-		      	return (
-		        <tr key={i}>
-		        	{
-		        		Object.keys(row).map(function(key) 
-		        		{
-		        		    if(row[key] && row[key].length > 80)
-    							row[key] = row[key].substring(0, 75)+"...";
+			{
+				return (
+				<tr key={i}>
+					{
+						Object.keys(row).map(function(key) 
+						{
+							if(row[key] && row[key].length > 80)
+								row[key] = row[key].substring(0, 75)+"...";
 
-	                		return <td className="trim-info" key={key}>{row[key]}</td>;
-	              		})
-		        	}
-		        </tr>
-		      	);
-		    });
+							return <td className="trim-info" key={key}>{row[key]}</td>;
+						})
+					}
+				</tr>
+				);
+			});
 
 			console.log(this.state.data);
 
@@ -188,15 +189,15 @@ var DataView = React.createClass(
 			{
 				console.log(this.state.data)
 				return (
-		        	<tr>
-		        	{
-		        		Object.keys(row[0]).map(function(key) {
-		        			console.log(key);
-		            		return <th key={key}>{key}</th>;
-		          		})
-		        	}
-	        		</tr>
-		      	);
+					<tr>
+					{
+						Object.keys(row[0]).map(function(key) {
+							console.log(key);
+							return <th key={key}>{key}</th>;
+						})
+					}
+					</tr>
+				);
 			}); */
 
 			return (
@@ -263,65 +264,65 @@ var Amplify = React.createClass(
 		}
 
 		routie({
-		    // load the main module in the home page		
-		    '': function() 
-		    {
-	    		console.log("home");
+			// load the main module in the home page		
+			'': function() 
+			{
+				console.log("home");
 
-	    		self.setState({ 
-	    			app: <App 
-	    				module='home' 
-	    				url={api('webserver')} 
-	    				sidenavUrl={api('show/databases/mysql')} 
-	    				dbname='' /> 
-	    		});
-		    },
-		    '/db/:dbname': function(dbname)
-		    {
-		    	console.log("show tables from "+ dbname);	    	
+				self.setState({ 
+					app: <App 
+						module='home' 
+						url={api('webserver')} 
+						sidenavUrl={api('show/databases/mysql')} 
+						dbname='' /> 
+				});
+			},
+			'/db/:dbname': function(dbname)
+			{
+				console.log("show tables from "+ dbname);	    	
 
-	    		self.setState({ 
-	    			app: <App 
-	    				module='dataview' 
-	    				url={api('show/tables/'+ dbname)} 
-	    				datatype='Table'
-	    				sidenavUrl={api('show/tables/'+ dbname)} 
-	    				dbname={dbname} /> 
-	    		});	    	
-		    },
-		    '/db/:dbname/table/:tablename': function(dbname, tablename)
-		    {
-		    	console.log("show columns from "+ dbname);	    	
+				self.setState({ 
+					app: <App 
+						module='dataview' 
+						url={api('show/tables/'+ dbname)} 
+						datatype='Table'
+						sidenavUrl={api('show/tables/'+ dbname)} 
+						dbname={dbname} /> 
+				});	    	
+			},
+			'/db/:dbname/table/:tablename': function(dbname, tablename)
+			{
+				console.log("show columns from "+ dbname);	    	
 
-	    		self.setState({ 
-	    			app: <App 
-	    				module='dataview' 
-	    				url={api('show/columns/'+ dbname +'.'+ tablename)} 
-	    				datatype='Column'
-	    				sidenavUrl={api('show/tables/'+ dbname)} 
-	    				dbname={dbname}
-	    				tablename={tablename} /> 
-	    		});
-		    },
-		    '/article/:id': function(id)
-		    {
-	    		console.log("single article");
-	    		console.log(id);
-	    		var mod = 
-	    			<div className="col-sm-12">Single Page View for article {id}</div>
-	    		self.setState({ module: mod });		    	
-		    },
-		    '*': function() {
-		        // default: go to landing page
-		        routie('');
-		    }
+				self.setState({ 
+					app: <App 
+						module='dataview' 
+						url={api('show/columns/'+ dbname +'.'+ tablename)} 
+						datatype='Column'
+						sidenavUrl={api('show/tables/'+ dbname)} 
+						dbname={dbname}
+						tablename={tablename} /> 
+				});
+			},
+			'/article/:id': function(id)
+			{
+				console.log("single article");
+				console.log(id);
+				var mod = 
+					<div className="col-sm-12">Single Page View for article {id}</div>
+				self.setState({ module: mod });		    	
+			},
+			'*': function() {
+				// default: go to landing page
+				routie('');
+			}
 		});
 	},
 
 	render: function () 
 	{
-	    return (
-	    	<div>
+		return (
+			<div>
 				<Header></Header>
 				<div className="container-fluid" id="container">
 					{this.state.app}
@@ -334,5 +335,5 @@ var Amplify = React.createClass(
 
 ReactDOM.render(
 	<Amplify api_src='api/v1/' />,
-  	document.getElementById('main')
+	document.getElementById('main')
 );
