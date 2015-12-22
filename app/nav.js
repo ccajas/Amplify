@@ -74,7 +74,9 @@ var SideNav = React.createClass({
 				'ul',
 				{ className: 'nav' },
 				React.createElement(SideNavTools, { dbname: self.props.dbname, tablename: self.props.tablename }),
-				React.createElement(SideNavOperations, { dbname: self.props.dbname, tablename: self.props.tablename }),
+				(() => {
+					if (this.props.dbname) return React.createElement(SideNavOperations, { dbname: self.props.dbname, tablename: self.props.tablename });
+				})(),
 				React.createElement(SideNavDatalist, { heading: navheading, data: this.state.data, data: datalist })
 			)
 		);
