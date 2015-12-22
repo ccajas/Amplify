@@ -298,7 +298,11 @@ var DataView = React.createClass(
 		      	return (
 		        <tr key={i}>
 		        	{
-		        		Object.keys(row).map(function(key) {
+		        		Object.keys(row).map(function(key) 
+		        		{
+		        		    if(row[key] && row[key].length > 80)
+    							row[key] = row[key].substring(0, 75)+"...";
+
 	                		return <td className="trim-info" key={key}>{row[key]}</td>;
 	              		})
 		        	}
