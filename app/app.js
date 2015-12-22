@@ -31,7 +31,7 @@ var App = React.createClass({
 		if (this.props.module === 'dataview') module = React.createElement(DataView, { datatype: this.props.datatype, url: this.state.url,
 			dbname: this.props.dbname, tablename: this.props.tablename, _error: this._error });
 
-		if (this.props.module === 'sql') module = React.createElement(Sql, { dbname: this.props.dbname, _error: this._error });
+		if (this.props.module === 'sql') module = React.createElement(Sql, { dbname: this.props.dbname, queryUrl: this.props.queryUrl, _error: this._error });
 
 		return React.createElement(
 			'div',
@@ -230,12 +230,17 @@ var Sql = React.createClass({
 	displayName: 'Sql',
 
 	getInitialState: function () {
-		return { query: '' };
+		return { query: '', url: this.props.queryUrl };
 	},
 
 	handleUpdate: function () {
-		console.log("component update");
 		this.setState({ query: this.sqlInput.lastHtml });
+	},
+
+	submitQuery: function (e) {
+		console.log('Submitted query');
+		console.log(e.target.value);
+		//this.setState({ url: this. });
 	},
 
 	render: function () {
@@ -265,16 +270,26 @@ var Sql = React.createClass({
 					React.createElement('br', null),
 					React.createElement(
 						'button',
-						{ className: 'btn', id: 'query_clear', onclick: 'return false' },
+						{ className: 'btn', id: 'query_clear' },
 						'Clear'
 					),
 					React.createElement(
 						'button',
-						{ className: 'btn btn-primary', id: 'query_btn', onclick: 'return false' },
+						{ className: 'btn btn-primary', id: 'query_btn',
+							onClick: this.submitQuery },
 						'Submit Query'
 					)
 				)
-			)
+			),
+			(() => {
+				if (this.state.query) return React.createElement(
+					'section',
+					{ className: 'col-sm-10' },
+					React.createElement(DataView, { datatype: 'Query result', url: this.state.url,
+						dbname: this.props.dbname, tablename: this.props.tablename,
+						post: 'true', postdata: this.state.query, _error: this._error })
+				);
+			})()
 		);
 	}
 });
@@ -292,9 +307,10 @@ var DataView = React.createClass({
 		$.ajax({
 			url: this.props.url,
 			dataType: 'json',
-			cache: false,
+			method: this.props.post ? 'POST' : 'GET',
+			data: { query: this.props.postdata },
+			cache: this.props.post ? true : false,
 			success: (function (data) {
-				console.log(data);
 				this.setState({
 					data: data.request.rows,
 					url: this.props.url,
@@ -303,7 +319,7 @@ var DataView = React.createClass({
 				});
 			}).bind(this),
 
-			error: (function (xhr, status, err) {
+			fail: (function (xhr, status, err) {
 				this.props._error(xhr.responseJSON.request.message);
 			}).bind(this)
 		});
@@ -321,7 +337,7 @@ var DataView = React.createClass({
 
 	componentDidUpdate: function () {
 		if (this.state.url != this.props.url) {
-			console.log("refresh dataview data");
+			console.log("component did update");
 			this.loadData();
 		}
 	},
@@ -499,6 +515,7 @@ var Amplify = React.createClass({
 						module: action,
 						url: api('show/tables/' + dbname),
 						datatype: 'Table',
+						queryUrl: api('query/' + dbname),
 						sidenavUrl: api('show/tables/' + dbname),
 						dbname: dbname })
 				});

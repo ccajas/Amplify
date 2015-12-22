@@ -39,7 +39,7 @@ var App = React.createClass(
 				dbname={this.props.dbname} tablename={this.props.tablename} _error={this._error}/>;
 
 		if (this.props.module === 'sql')
-			module = <Sql dbname={this.props.dbname} _error={this._error}/>;
+			module = <Sql dbname={this.props.dbname} queryUrl={this.props.queryUrl} _error={this._error}/>;
 
 		return (
 			<div className="row-fluid">
@@ -178,13 +178,19 @@ var Sql = React.createClass(
 {
 	getInitialState: function() 
 	{
-    	return {query: ''};
+    	return {query: '', url: this.props.queryUrl };
   	},
 
 	handleUpdate: function() 
 	{
-		console.log("component update")
-		this.setState({ query: this.sqlInput.lastHtml })
+		this.setState({ query: this.sqlInput.lastHtml });
+	},
+
+	submitQuery: function(e)
+	{
+		console.log('Submitted query')
+		console.log(e.target.value)
+		//this.setState({ url: this. });
 	},
 
 	render: function()
@@ -200,10 +206,24 @@ var Sql = React.createClass(
 						<ContentEditable className="console" html="Enter your query here" _handleUpdate={this.handleUpdate} 
 							ref={(ref) => this.sqlInput = ref} />
 						<br/>
-						<button className="btn" id="query_clear" onclick="return false">Clear</button>
-						<button className="btn btn-primary" id="query_btn" onclick="return false">Submit Query</button>
+						<button className="btn" id="query_clear">Clear</button>
+						<button className="btn btn-primary" id="query_btn" 
+							onClick={this.submitQuery}>Submit Query</button>
 					</fieldset>
 				</form>
+
+				{
+					(() => {
+						if (this.state.query)
+							return (
+								<section className="col-sm-10">
+									<DataView datatype='Query result' url={this.state.url} 
+										dbname={this.props.dbname} tablename={this.props.tablename} 
+										post='true' postdata={this.state.query} _error={this._error}/>
+								</section>
+							)
+					})
+				()}
 			</div>
 		);
 	}
@@ -223,9 +243,10 @@ var DataView = React.createClass(
 		$.ajax({
 			url: this.props.url,
 			dataType: 'json',
-			cache: false,
+			method: (this.props.post) ? 'POST' : 'GET',
+			data: { query: this.props.postdata },
+			cache: (this.props.post) ? true : false,
 			success: function(data) {
-				console.log(data);
 				this.setState({ 
 					data: data.request.rows, 
 					url: this.props.url,
@@ -234,7 +255,7 @@ var DataView = React.createClass(
 				});
 			}.bind(this),
 
-			error: function(xhr, status, err) {
+			fail: function(xhr, status, err) {
 				this.props._error(xhr.responseJSON.request.message);
 			}.bind(this)
 		});
@@ -255,7 +276,7 @@ var DataView = React.createClass(
 	{
 		if (this.state.url != this.props.url)
 		{
-			console.log("refresh dataview data")
+			console.log("component did update")
 			this.loadData();
 		}
 	},
@@ -391,6 +412,7 @@ var Amplify = React.createClass(
 						module={action} 
 						url={api('show/tables/'+ dbname)} 
 						datatype='Table'
+						queryUrl={api('query/'+ dbname)}
 						sidenavUrl={api('show/tables/'+ dbname)} 
 						dbname={dbname} /> 
 				});	    	
