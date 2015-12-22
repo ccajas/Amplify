@@ -60,6 +60,7 @@ var SideNav = React.createClass(
 				<h4>Sidebar nav</h4>
 				<ul className="nav">
 					<SideNavTools dbname={self.props.dbname} tablename={self.props.tablename} />
+					<SideNavOperations dbname={self.props.dbname} tablename={self.props.tablename} />
 					<SideNavDatalist heading={navheading} data={this.state.data} data={datalist}/>
 				</ul>
 			</div>
@@ -74,6 +75,25 @@ var SideNavTools = React.createClass(
 		var operations;
 		console.log("SideNavTools props")
 		console.log(this.props)
+
+		return (
+			<li className="tools">
+				<div>Tools</div>
+				<ul className="subnav">
+					<li><a href={'#/db/'+ this.props.dbname +'/sql'}>SQL command</a></li>
+					<li><a href={'#/db/'+ this.props.dbname +'/import'}>Import</a></li>
+					<li><a href={'#/db/'+ this.props.dbname +'/export'}>Export</a></li>
+				</ul>
+			</li>
+		);
+	}
+})
+
+var SideNavOperations = React.createClass(
+{
+	render: function()
+	{
+		var operations;
 
 		// If we are viewing a table, load table operations
 		if (this.props.tablename)
@@ -90,25 +110,15 @@ var SideNavTools = React.createClass(
 		}
 
 		return (
-			<div>
-			<li className="tools">
-				<div>Tools</div>
-				<ul className="subnav">
-					<li><a href={'#/db/'+ this.props.dbname +'/sql'}>SQL command</a></li>
-					<li><a href={'#/db/'+ this.props.dbname +'/import'}>Import</a></li>
-					<li><a href={'#/db/'+ this.props.dbname +'/export'}>Export</a></li>
-				</ul>
-			</li>
 			<li className="operations">
 				<div>Operations</div>
 				<ul className="subnav">
 					{operations}
 				</ul>
 			</li>
-			</div>
 		);
 	}
-})
+});
 
 var SideNavDatalist = React.createClass(
 {
