@@ -87,10 +87,6 @@ var SideNavTools = React.createClass({
 	displayName: 'SideNavTools',
 
 	render: function () {
-		var operations;
-		console.log("SideNavTools props");
-		console.log(this.props);
-
 		return React.createElement(
 			'li',
 			{ className: 'tools' },
@@ -143,24 +139,41 @@ var SideNavOperations = React.createClass({
 		// If we are viewing a table, load table operations
 		if (this.props.tablename) {
 			operations = React.createElement(
-				'li',
-				null,
+				'ul',
+				{ className: 'subnav' },
 				React.createElement(
-					'a',
-					{ href: '#/db/' + this.props.dbname + '/table/' + this.props.tablename },
-					'View Structure'
+					'li',
+					null,
+					React.createElement(
+						'a',
+						{ href: '#/db/' + this.props.dbname + '/table/' + this.props.tablename },
+						'View Structure'
+					)
+				),
+				React.createElement(
+					'li',
+					null,
+					React.createElement(
+						'a',
+						{ href: '#/db/' + this.props.dbname + '/select/' + this.props.tablename },
+						'Select Data'
+					)
 				)
 			);
 		}
 		// Else, load database operations
 		else {
 				operations = React.createElement(
-					'li',
-					null,
+					'ul',
+					{ className: 'subnav' },
 					React.createElement(
-						'a',
-						{ href: '#/insert/' + this.props.dbname },
-						'Insert Table'
+						'li',
+						null,
+						React.createElement(
+							'a',
+							{ href: '#/insert/' + this.props.dbname },
+							'Insert Table'
+						)
 					)
 				);
 			}
@@ -173,11 +186,7 @@ var SideNavOperations = React.createClass({
 				null,
 				'Operations'
 			),
-			React.createElement(
-				'ul',
-				{ className: 'subnav' },
-				operations
-			)
+			operations
 		);
 	}
 });
