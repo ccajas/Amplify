@@ -39,36 +39,6 @@ var App = React.createClass(
     	return { data: [], errors: [] };
   	},
 
-  	/*loadData: function()
-  	{
-  		console.log("load app data")
-  		this.setState({ data: [] });
-  	    $.ajax({
-			url: this.props.url,
-			dataType: 'json',
-			cache: false,
-			success: function(newData) {
-				this.setState({data: []})
-				console.log("New data loaded")
-			}.bind(this),
-
-			error: function(xhr, status, err) {
-				this._error(xhr.responseJSON.request.message);
-			}.bind(this),
-
-			complete: function(newData) {
-				console.log("Data complete")
-				console.log(newData.responseJSON)
-				this.setState({data: newData.responseJSON.request });
-			}.bind(this),
-		});
-  	},
-
-  	componentDidMount: function(nextProps) 
-  	{
-		this.loadData();
-	},*/
-
 	_error: function (errorMsg)
 	{
 		var errors = this.state.errors;
@@ -310,25 +280,29 @@ var DataView = React.createClass(
 		      	);
 		    });
 
-			var dataRow = $.makeArray(this.state.data)
+			console.log(this.state.data);
 
-			var colNames = function()
+				/*
+			var colNames = $.makeArray(this.state.data)
+				.map(function(row, i)
 			{
+				console.log(this.state.data)
 				return (
 		        	<tr>
 		        	{
-		        		Object.keys(dataRow[0]).map(function(key) {
+		        		Object.keys(row[0]).map(function(key) {
+		        			console.log(key);
 		            		return <th key={key}>{key}</th>;
 		          		})
 		        	}
 	        		</tr>
 		      	);
-			}
+			}); */
 
 			return (
 				<div className="col-sm-12">
-					<h3>Data View</h3>
-					<h3>{this.props.datatype}: <em>{this.props.structureName}</em></h3>
+					<h3>{this.props.tablename ? 'Table: ' : 'Database: '} 
+						<em>{this.props.tablename ? this.props.tablename : this.props.dbname}</em></h3>
 					<h4 className="sub">{rows.length} {this.props.datatype}
 					{rows.length == 1 ? '' : 's'}</h4>
 
@@ -351,7 +325,7 @@ var DataView = React.createClass(
 					<div className="datalist tableview">
 						<table className="col-sm-12">
 							<thead>
-								{colNames}
+								
 							</thead>
 							<tbody>
 								{rows}
