@@ -24,8 +24,14 @@ var App = React.createClass(
 {
   	getInitialState: function() 
   	{
-    	return { data: [], errors: [] };
+    	return { data: [], url: this.props.url, errors: [] };
   	},
+
+  	componentDidUpdate: function() 
+  	{
+  		if (this.state.url != this.props.url)
+			this.setState({ url: this.props.url })
+	},
 
 	_error: function (errorMsg)
 	{
@@ -47,7 +53,7 @@ var App = React.createClass(
 			module = <Home webserver={this.state.data} _error={this._error}/>;
 
 		if (this.props.module === 'dataview')
-			module = <DataView datatype={this.props.datatype} url={this.props.url}
+			module = <DataView datatype={this.props.datatype} url={this.state.url}
 				dbname={this.props.dbname} tablename={this.props.tablename} _error={this._error}/>;
 
 		return (
@@ -103,7 +109,7 @@ var DataView = React.createClass(
 {
   	getInitialState: function() 
   	{
-    	return { data: [], dbname: '', tablename: ''};
+    	return { data: [], url: '', dbname: '', tablename: ''};
   	},
 
   	loadData: function()
@@ -116,6 +122,7 @@ var DataView = React.createClass(
 				console.log(data);
 				this.setState({ 
 					data: data.request.rows, 
+					url: this.props.url,
 					dbname: this.props.dbname,
 					tablename: this.props.tablename
 				});
@@ -140,8 +147,7 @@ var DataView = React.createClass(
 
   	componentDidUpdate: function() 
   	{
-  		if (this.state.dbname != this.props.dbname ||
-  			this.state.tablename != this.props.tablename)
+  		if (this.state.url != this.props.url)
   		{
   			console.log("refresh dataview data")
 			this.loadData();
