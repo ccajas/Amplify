@@ -96,7 +96,7 @@ var App = React.createClass({
 		if (this.props.module === 'home') module = React.createElement(Home, { webserver: this.state.data, _error: this._error });
 
 		if (this.props.module === 'dataview') module = React.createElement(DataView, { datatype: this.props.datatype, url: this.props.url,
-			dbname: this.props.dbname, _error: this._error });
+			dbname: this.props.dbname, tablename: this.props.tablename, _error: this._error });
 
 		return React.createElement(
 			"div",
@@ -355,7 +355,7 @@ var DataView = React.createClass({
 	displayName: "DataView",
 
 	getInitialState: function () {
-		return { data: [], dbname: '' };
+		return { data: [], dbname: '', tablename: '' };
 	},
 
 	loadData: function () {
@@ -367,7 +367,8 @@ var DataView = React.createClass({
 				console.log(data);
 				this.setState({
 					data: data.request.rows,
-					dbname: this.props.dbname
+					dbname: this.props.dbname,
+					tablename: this.props.tablename
 				});
 			}).bind(this),
 
@@ -382,8 +383,8 @@ var DataView = React.createClass({
 	},
 
 	componentDidUpdate: function () {
-		if (this.state.dbname != this.props.dbname) {
-			console.log('did update new db');
+		if (this.state.dbname != this.props.dbname || this.state.tablename != this.props.tablename) {
+			console.log("refresh dataview data");
 			this.loadData();
 		}
 	},
@@ -499,17 +500,21 @@ var DataView = React.createClass({
 					)
 				),
 				React.createElement(
-					"table",
-					{ className: "datalist" },
+					"div",
+					{ className: "datalist tableview" },
 					React.createElement(
-						"thead",
-						null,
-						colNames
-					),
-					React.createElement(
-						"tbody",
-						null,
-						rows
+						"table",
+						{ className: "col-sm-12" },
+						React.createElement(
+							"thead",
+							null,
+							colNames
+						),
+						React.createElement(
+							"tbody",
+							null,
+							rows
+						)
 					)
 				)
 			);
@@ -564,6 +569,19 @@ var Amplify = React.createClass({
 						datatype: "Table",
 						sidenavUrl: api('show/tables/' + dbname),
 						dbname: dbname })
+				});
+			},
+			'/db/:dbname/table/:tablename': function (dbname, tablename) {
+				console.log("show columns from " + dbname);
+
+				self.setState({
+					app: React.createElement(App, {
+						module: "dataview",
+						url: api('show/columns/' + dbname + '.' + tablename),
+						datatype: "Column",
+						sidenavUrl: api('show/tables/' + dbname),
+						dbname: dbname,
+						tablename: tablename })
 				});
 			},
 			'/article/:id': function (id) {
