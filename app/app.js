@@ -74,11 +74,11 @@ var App = React.createClass({
 				React.createElement(SideNav, { url: this.props.sidenavUrl, dbname: this.props.dbname,
 					tablename: this.props.tablename, _error: this._error })
 			),
-			React.createElement(
-				"section",
-				{ className: "col-sm-10" },
-				(() => {
-					if (this.state.errors.length) return React.createElement(
+			(() => {
+				if (this.state.errors.length) return React.createElement(
+					"section",
+					{ className: "col-sm-10" },
+					React.createElement(
 						"div",
 						{ className: "col-sm-12" },
 						React.createElement("br", null),
@@ -93,10 +93,13 @@ var App = React.createClass({
 							{ className: "alert alert-danger" },
 							this.state.errors
 						)
-					);
-				})(),
-				module
-			)
+					)
+				);else return React.createElement(
+					"section",
+					{ className: "col-sm-10" },
+					module
+				);
+			})()
 		);
 	}
 });
@@ -240,15 +243,15 @@ var DataView = React.createClass({
    {
    	console.log(this.state.data)
    	return (
-          	<tr>
-          	{
-          		Object.keys(row[0]).map(function(key) {
-          			console.log(key);
-              		return <th key={key}>{key}</th>;
-            		})
-          	}
-         		</tr>
-        	);
+   		<tr>
+   		{
+   			Object.keys(row[0]).map(function(key) {
+   				console.log(key);
+   				return <th key={key}>{key}</th>;
+   			})
+   		}
+   		</tr>
+   	);
    }); */
 
 			return React.createElement(
