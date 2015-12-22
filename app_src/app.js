@@ -65,7 +65,8 @@ var App = React.createClass(
 		return (
 			<div className="row-fluid">
 				<section className="col-sm-2">
-	    			<SideNav url={this.props.sidenavUrl} dbname={this.props.dbname} _error={this._error}/>
+	    			<SideNav url={this.props.sidenavUrl} dbname={this.props.dbname}
+	    				tablename={this.props.tablename} _error={this._error}/>
 				</section>
 				<section className="col-sm-10">
 					{
@@ -168,7 +169,7 @@ var SideNav = React.createClass(
 			<div className="sidenav">
 				<h4>Sidebar nav</h4>
 				<ul className="nav">
-					<SideNavTools dbname={self.props.dbname} />
+					<SideNavTools dbname={self.props.dbname} tablename={self.props.tablename} />
 					<SideNavDatalist heading={navheading} data={this.state.data} data={datalist}/>
 				</ul>
 			</div>
@@ -180,7 +181,26 @@ var SideNavTools = React.createClass(
 {
 	render: function()
 	{
+		var operations;
+		console.log("SideNavTools props")
+		console.log(this.props)
+
+		// If we are viewing a table, load table operations
+		if (this.props.tablename)
+		{
+			operations =
+				<li><a href={'#/db/'+ this.props.dbname +'/table/'+ this.props.tablename}>View Structure</a></li>
+
+		}
+		// Else, load database operations
+		else
+		{
+			operations =
+				<li><a href={'#/insert/'+ this.props.dbname}>Insert Table</a></li>
+		}
+
 		return (
+			<div>
 			<li className="tools">
 				<div>Tools</div>
 				<ul className="subnav">
@@ -189,6 +209,13 @@ var SideNavTools = React.createClass(
 					<li><a href={'#/db/'+ this.props.dbname +'/export'}>Export</a></li>
 				</ul>
 			</li>
+			<li className="operations">
+				<div>Operations</div>
+				<ul className="subnav">
+					{operations}
+				</ul>
+			</li>
+			</div>
 		);
 	}
 })
@@ -237,6 +264,12 @@ var DataView = React.createClass(
 				this.props._error(xhr.responseJSON.request.message);
 			}.bind(this)
 		});
+
+		// Scroll to top
+		//window.scrollTo(0, 0);
+
+		// Or smooth scroll
+		$("html, body").animate({ scrollTop: 0 }, 400);
   	},
 
   	componentDidMount: function() 
@@ -282,7 +315,7 @@ var DataView = React.createClass(
 
 			console.log(this.state.data);
 
-				/*
+			/*
 			var colNames = $.makeArray(this.state.data)
 				.map(function(row, i)
 			{
