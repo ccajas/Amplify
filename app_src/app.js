@@ -249,6 +249,7 @@ var DataView = React.createClass(
 			success: function(data) {
 				this.setState({ 
 					data: data.request.rows, 
+					postdata: this.props.postdata,
 					url: this.props.url,
 					dbname: this.props.dbname,
 					tablename: this.props.tablename
@@ -274,9 +275,9 @@ var DataView = React.createClass(
 
 	componentDidUpdate: function() 
 	{
-		if (this.state.url != this.props.url)
+		if (this.state.url != this.props.url ||
+			this.state.postdata != this.props.postdata)
 		{
-			console.log("component did update")
 			this.loadData();
 		}
 	},
