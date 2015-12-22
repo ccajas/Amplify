@@ -264,7 +264,6 @@ var Sql = React.createClass({
 						'Buttons'
 					),
 					React.createElement('br', null),
-					this.state.query,
 					React.createElement(ContentEditable, { className: 'console', html: 'Enter your query here', _handleUpdate: this.handleUpdate,
 						ref: ref => this.sqlInput = ref }),
 					React.createElement('br', null),
@@ -287,7 +286,7 @@ var Sql = React.createClass({
 					{ className: 'col-sm-10' },
 					React.createElement(DataView, { datatype: 'Query result', url: this.state.url,
 						dbname: this.props.dbname, tablename: this.props.tablename,
-						post: 'true', postdata: this.state.query, _error: this._error })
+						post: 'true', postdata: this.state.query, _error: this.props._error })
 				);
 			})()
 		);
@@ -314,14 +313,15 @@ var DataView = React.createClass({
 				this.setState({
 					data: data.request.rows,
 					postdata: this.props.postdata,
+					willReceiveProps: false,
 					url: this.props.url,
 					dbname: this.props.dbname,
 					tablename: this.props.tablename
 				});
 			}).bind(this),
 
-			fail: (function (xhr, status, err) {
-				this.props._error(xhr.responseJSON.request.message);
+			error: (function (xhr, status, err) {
+				if (!this.props.postdata) this.props._error(xhr.responseJSON.request.message);
 			}).bind(this)
 		});
 
@@ -342,13 +342,20 @@ var DataView = React.createClass({
 		}
 	},
 
+	componentWillReceiveProps: function (nextProps) {
+		this.setState({ willReceiveProps: true });
+	},
+
 	render: function () {
-		console.log("rendering dataview...");
+		if (this.state.data && !this.state.willReceiveProps) {
+			console.log("rendering DataView...");
 
-		var divStyle = { padding: '10px 15px' };
+			var length = this.state.data.length;
+			var divStyle = { padding: '10px 15px' };
 
-		if (this.state.data) {
 			var rows = $.makeArray(this.state.data).map(function (row, i) {
+				console.log("loading rows...");
+				if (i + 1 == length) console.log("Bing!");
 				return React.createElement(
 					'tr',
 					{ key: i },
@@ -363,8 +370,6 @@ var DataView = React.createClass({
 					})
 				);
 			});
-
-			console.log(this.state.data);
 
 			/*
    var colNames = $.makeArray(this.state.data)
