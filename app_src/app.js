@@ -320,11 +320,10 @@ var DataView = React.createClass(
 	{
 		if (this.state.data && !this.state.willReceiveProps)
 		{
-			console.log("rendering DataView...");
-
-			var length = this.state.data.length;
+			var rowsLength = this.state.data.length;
 			var divStyle = { padding: '10px 15px'};
 
+			console.log("rendering DataView...");
 			console.log("loading rows...");
 
 			// Print column names
@@ -349,35 +348,12 @@ var DataView = React.createClass(
 				}		
 			}, this);		
 
-			var rows = $.makeArray(this.state.data)
-				.map(function(row, i) 
-			{
-				if (i + 1 == length)
-				{
-					console.log("Bing!");
-				}
-
-				return (
-					<tr key={i}>
-					{
-						Object.keys(row).map(function(key) 
-						{
-							if(row[key] && row[key].length > 80)
-								row[key] = row[key].substring(0, 75) + "...";
-
-							return <td className="trim-info" key={key}>{row[key]}</td>;
-						})
-					}
-					</tr>
-				);		
-			});
-
 			return (
 				<div className="col-sm-12">
 					<h3>{this.props.tablename ? 'Table: ' : 'Database: '} 
 						<em>{this.props.tablename ? this.props.tablename : this.props.dbname}</em></h3>
-					<h4 className="sub">{rows.length} {this.props.datatype}
-					{rows.length == 1 ? '' : 's'}</h4>
+					<h4 className="sub">{rowsLength} {this.props.datatype}
+					{rowsLength == 1 ? '' : 's'}</h4>
 
 					<div className="row">
 						<h3 className="col-sm-12">{this.props.datatype}s</h3>
@@ -400,9 +376,7 @@ var DataView = React.createClass(
 							<thead>
 								{colNames}
 							</thead>
-							<tbody>
-								{rows}
-							</tbody>
+							<DataRows data={this.state.data}/>
 						</table>
 					</div>
 				</div>
@@ -416,6 +390,41 @@ var DataView = React.createClass(
 				</div>
 			)
 		}
+	}
+});
+
+/** DataRows component **/
+
+var DataRows = React.createClass(
+{
+	render: function()
+	{
+		var rows = $.makeArray(this.props.data)
+			.map(function(row, i) 
+		{
+			if (i + 1 == length)
+				console.log("Bing!");
+
+			return (
+				<tr key={i}>
+				{
+					Object.keys(row).map(function(key) 
+					{
+						if(row[key] && row[key].length > 80)
+							row[key] = row[key].substring(0, 75) + "...";
+
+						return <td className="trim-info" key={key}>{row[key]}</td>;
+					})
+				}
+				</tr>
+			);		
+		});	
+
+		return (
+			<tbody>
+				{rows}
+			</tbody>
+		)
 	}
 });
 
