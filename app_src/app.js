@@ -214,13 +214,13 @@ var Sql = React.createClass(
 				{
 					(() => {
 						if (this.state.query)
-							return (
-								<section className="col-sm-10">
-									<DataView datatype='Query result' url={this.state.url} 
-										dbname={this.props.dbname} tablename={this.props.tablename} 
-										post='true' postdata={this.state.query} _error={this.props._error}/>
-								</section>
-							)
+						return (
+							<section className="col-sm-10">
+								<DataView datatype='Query result' url={this.state.url} 
+									dbname={this.props.dbname} tablename={this.props.tablename} 
+									post='true' postdata={this.state.query} _error={this.props._error}/>
+							</section>
+						)
 					})
 				()}
 			</div>
@@ -451,12 +451,18 @@ var DataRows = React.createClass(
 			if (i + 1 == length)
 				console.log("Bing!");
 
+			function toggleRow(id)
+			{
+				var checkbox = $('#check_'+ id);
+				checkbox.prop("checked", !checkbox.prop("checked"));
+			}
+
 			return (
-				<tr key={row.$id}>
+				<tr key={row.$id} onClick={toggleRow.bind(this, row.$id)}>
 					<td>
 						<div className="checkbox">
-							<input type="checkbox" id={'checkbox_'+ row.$id}/>
-							<label htmlFor={'checkbox_'+ row.$id}></label>
+							<input type="checkbox" id={'check_'+ row.$id}/>
+							<label htmlFor={'check_'+ row.$id}></label>
 						</div>
 					</td>
 				{
