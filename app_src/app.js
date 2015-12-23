@@ -328,6 +328,41 @@ var DataView = React.createClass(
 		this.setState({ data: sorted, currentsort: newsort })
 	},
 
+	_filter: function(e)
+	{
+		var search = e.target.value;
+		if (!search) return;
+
+		// If copy doesn't exist, search in original
+		var searchData = (this.state.fullData) ? 
+			this.state.fullData : this.state.data;
+
+		// Create a new, filtered array
+		var filtered = [];
+
+		for(var i = 0; i < $.makeArray(searchData).length; i++) 
+		{
+			var obj = searchData[i];
+			var objMatch = false;
+
+  			Object.keys(obj).map(function(key) 
+			{
+				if (typeof obj[key] === 'string' && 
+					!objMatch && obj[key].includes(search))
+				{
+					filtered.push(obj);
+					objMatch = true;
+				}
+			});
+		}
+
+		// Keep original array as temporary
+		if (!this.state.fullData)
+			this.setState({ fullData: this.state.data })
+
+		this.setState({ data: filtered })
+	},
+
 	render: function()
 	{
 		if (this.state.data && !this.state.willReceiveProps)
@@ -376,7 +411,7 @@ var DataView = React.createClass(
 							</h4>
 						</div>
 						<div className="col-sm-4 pull-right" style={divStyle}>
-							<input placeholder="Search in..."/>
+							<input onChange={this._filter} placeholder="Search in..." />
 						</div>
 					</div>
 					<div className="datalist tableview">
