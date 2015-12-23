@@ -382,6 +382,8 @@ var DataView = React.createClass(
 					{
 						Object.keys(row).map(function(key) 
 						{
+							if (key == '$id') return;
+
 							return (
 								<th onClick={this._sortBy.bind(this, key)} key={key}>
 									<b><em>{key}</em></b>
@@ -460,6 +462,8 @@ var DataRows = React.createClass(
 				{
 					Object.keys(row).map(function(key) 
 					{
+						if(key == '$id') return;
+
 						if(row[key] && row[key].length > 80)
 							row[key] = row[key].substring(0, 75) + "...";
 

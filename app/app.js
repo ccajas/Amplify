@@ -421,7 +421,7 @@ var DataView = React.createClass({
 						'Edit'
 					),
 					Object.keys(row).map(function (key) {
-						return React.createElement(
+						if (key != '$id') return React.createElement(
 							'th',
 							{ onClick: this._sortBy.bind(this, key), key: key },
 							React.createElement(
@@ -558,6 +558,8 @@ var DataRows = React.createClass({
 					)
 				),
 				Object.keys(row).map(function (key) {
+					if (key == '$id') return;
+
 					if (row[key] && row[key].length > 80) row[key] = row[key].substring(0, 75) + "...";
 
 					return React.createElement(
