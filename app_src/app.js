@@ -267,7 +267,6 @@ var DataView = React.createClass(
 					tablename: this.props.tablename
 				});
 
-				console.log(this.state.data);
 			}.bind(this),
 
 			error: function(xhr, status, err) 
@@ -339,27 +338,23 @@ var DataView = React.createClass(
 			console.log("rendering DataView...");
 			console.log("loading rows...");
 
-			// Print column names
-			var colNames = $.makeArray(this.state.data).map(function(row, i) 
+			var colNames = $.makeArray(this.state.data[0]).map(function(row) 
 			{
-				if (i == 0)
-				{
-					return (
-						<tr key='heading'>
-							<th>Edit</th>
+				return (
+					<tr key='heading'>
+						<th>Edit</th>
+					{
+						Object.keys(row).map(function(key) 
 						{
-							Object.keys(row).map(function(key) 
-							{
-								return (
-									<th onClick={this._sortBy.bind(this, key)} key={key}>
-										<b><em>{key}</em></b>
-									</th>
-								)
-							}, this)
-						}
-						</tr>
-					);
-				}		
+							return (
+								<th onClick={this._sortBy.bind(this, key)} key={key}>
+									<b><em>{key}</em></b>
+								</th>
+							)
+						}, this)
+					}
+					</tr>
+				);	
 			}, this);		
 
 			return (
@@ -384,7 +379,6 @@ var DataView = React.createClass(
 							<input placeholder="Search in..."/>
 						</div>
 					</div>
-
 					<div className="datalist tableview">
 						<table className="col-sm-12">
 							<thead>
@@ -554,7 +548,7 @@ var Amplify = React.createClass(
 		return (
 			<div>
 				<Header></Header>
-				<div className="container-fluid" id="container">
+				<div className="container-fluid" id="main">
 					{this.state.app}
 				</div>
 				<br/>
@@ -565,5 +559,5 @@ var Amplify = React.createClass(
 
 ReactDOM.render(
 	<Amplify api_src='api/v1/' />,
-	document.getElementById('main')
+	document.body //getElementById('main')
 );
