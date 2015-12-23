@@ -546,7 +546,7 @@ var Amplify = React.createClass(
 	render: function () 
 	{
 		return (
-			<div>
+			<div id="container">
 				<Header></Header>
 				<div className="container-fluid" id="main">
 					{this.state.app}
@@ -559,5 +559,5 @@ var Amplify = React.createClass(
 
 ReactDOM.render(
 	<Amplify api_src='api/v1/' />,
-	document.body //getElementById('main')
+	document.getElementById('container')
 );

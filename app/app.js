@@ -648,7 +648,7 @@ var Amplify = React.createClass({
 	render: function () {
 		return React.createElement(
 			'div',
-			null,
+			{ id: 'container' },
 			React.createElement(Header, null),
 			React.createElement(
 				'div',
@@ -660,5 +660,4 @@ var Amplify = React.createClass({
 	}
 });
 
-ReactDOM.render(React.createElement(Amplify, { api_src: 'api/v1/' }), document.body //getElementById('main')
-);
+ReactDOM.render(React.createElement(Amplify, { api_src: 'api/v1/' }), document.getElementById('container'));
