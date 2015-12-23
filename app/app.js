@@ -316,7 +316,7 @@ var DataView = React.createClass({
 						value: i,
 						writable: false,
 						configurable: false,
-						enumerable: true
+						enumerable: false
 					});
 				});
 
@@ -372,6 +372,8 @@ var DataView = React.createClass({
 			if (sort[1] == 'asc') return val_a > val_b ? -1 : val_a < val_b ? 1 : 0;else return val_a > val_b ? 1 : val_a < val_b ? -1 : 0;
 		});
 
+		console.log("sorting is done");
+
 		this.setState({ data: sorted, currentsort: newsort });
 	},
 
@@ -421,7 +423,7 @@ var DataView = React.createClass({
 						'Edit'
 					),
 					Object.keys(row).map(function (key) {
-						if (key != '$id') return React.createElement(
+						return React.createElement(
 							'th',
 							{ onClick: this._sortBy.bind(this, key), key: key },
 							React.createElement(
@@ -558,8 +560,6 @@ var DataRows = React.createClass({
 					)
 				),
 				Object.keys(row).map(function (key) {
-					if (key == '$id') return;
-
 					if (row[key] && row[key].length > 80) row[key] = row[key].substring(0, 75) + "...";
 
 					return React.createElement(
