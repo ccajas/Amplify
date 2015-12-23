@@ -366,11 +366,10 @@ var DataView = React.createClass({
 
 	render: function () {
 		if (this.state.data && !this.state.willReceiveProps) {
-			console.log("rendering DataView...");
-
-			var length = this.state.data.length;
+			var rowsLength = this.state.data.length;
 			var divStyle = { padding: '10px 15px' };
 
+			console.log("rendering DataView...");
 			console.log("loading rows...");
 
 			// Print column names
@@ -398,26 +397,6 @@ var DataView = React.createClass({
 				}
 			}, this);
 
-			var rows = $.makeArray(this.state.data).map(function (row, i) {
-				if (i + 1 == length) {
-					console.log("Bing!");
-				}
-
-				return React.createElement(
-					'tr',
-					{ key: i },
-					Object.keys(row).map(function (key) {
-						if (row[key] && row[key].length > 80) row[key] = row[key].substring(0, 75) + "...";
-
-						return React.createElement(
-							'td',
-							{ className: 'trim-info', key: key },
-							row[key]
-						);
-					})
-				);
-			});
-
 			return React.createElement(
 				'div',
 				{ className: 'col-sm-12' },
@@ -434,10 +413,10 @@ var DataView = React.createClass({
 				React.createElement(
 					'h4',
 					{ className: 'sub' },
-					rows.length,
+					rowsLength,
 					' ',
 					this.props.datatype,
-					rows.length == 1 ? '' : 's'
+					rowsLength == 1 ? '' : 's'
 				),
 				React.createElement(
 					'div',
@@ -497,11 +476,7 @@ var DataView = React.createClass({
 							null,
 							colNames
 						),
-						React.createElement(
-							'tbody',
-							null,
-							rows
-						)
+						React.createElement(DataRows, { data: this.state.data })
 					)
 				)
 			);
@@ -516,6 +491,38 @@ var DataView = React.createClass({
 				)
 			);
 		}
+	}
+});
+
+/** DataRows component **/
+
+var DataRows = React.createClass({
+	displayName: 'DataRows',
+
+	render: function () {
+		var rows = $.makeArray(this.props.data).map(function (row, i) {
+			if (i + 1 == length) console.log("Bing!");
+
+			return React.createElement(
+				'tr',
+				{ key: i },
+				Object.keys(row).map(function (key) {
+					if (row[key] && row[key].length > 80) row[key] = row[key].substring(0, 75) + "...";
+
+					return React.createElement(
+						'td',
+						{ className: 'trim-info', key: key },
+						row[key]
+					);
+				})
+			);
+		});
+
+		return React.createElement(
+			'tbody',
+			null,
+			rows
+		);
 	}
 });
 
