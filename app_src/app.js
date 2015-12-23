@@ -141,35 +141,35 @@ var Home = React.createClass(
 
 var ContentEditable = React.createClass(
 {
-    render: function()
-    {
-        return (
-        	<div className={this.props.className} onInput={this.handleChange} 
-        	contentEditable="true" dangerouslySetInnerHTML={{__html: this.props.html}}>
-        	</div>
-        );
-    },
+	render: function()
+	{
+		return (
+			<div className={this.props.className} onInput={this.handleChange} 
+			contentEditable="true" dangerouslySetInnerHTML={{__html: this.props.html}}>
+			</div>
+		);
+	},
 
-    shouldComponentUpdate: function(nextProps)
-    {
-        return nextProps.html !== this.getDOMNode().innerHTML;
-    },
+	shouldComponentUpdate: function(nextProps)
+	{
+		return nextProps.html !== this.getDOMNode().innerHTML;
+	},
 
-    handleChange: function()
-    {
-        var html = this.getDOMNode().innerHTML;
-        if (this.props.onChange && html !== this.lastHtml) 
-        {
-            this.props.onChange({
-                target: {
-                    value: html
-                }
-            });
-        }
+	handleChange: function()
+	{
+		var html = this.getDOMNode().innerHTML;
+		if (this.props.onChange && html !== this.lastHtml) 
+		{
+			this.props.onChange({
+				target: {
+					value: html
+				}
+			});
+		}
 
-        this.lastHtml = html;
-        this.props._handleUpdate();       
-    }
+		this.lastHtml = html;
+		this.props._handleUpdate();       
+	}
 });
 
 /** SQL Module **/
@@ -178,8 +178,8 @@ var Sql = React.createClass(
 {
 	getInitialState: function() 
 	{
-    	return {query: '', url: this.props.queryUrl };
-  	},
+		return {query: '', url: this.props.queryUrl };
+	},
 
 	handleUpdate: function() 
 	{
@@ -247,6 +247,17 @@ var DataView = React.createClass(
 			cache: (this.props.post) ? true : false,
 			success: function(data) 
 			{
+				// Map rows with unique identifires
+				data.request.rows.forEach(function(row, i)
+				{
+					Object.defineProperty(row, '$id', {
+						value: i,
+  						writable: false,
+						configurable: false,
+						enumerable: true
+					});
+				});
+
 				this.setState({ 
 					data: data.request.rows, 
 					postdata: this.props.postdata,
@@ -255,6 +266,8 @@ var DataView = React.createClass(
 					dbname: this.props.dbname,
 					tablename: this.props.tablename
 				});
+
+				console.log(this.state.data);
 			}.bind(this),
 
 			error: function(xhr, status, err) 
@@ -333,6 +346,7 @@ var DataView = React.createClass(
 				{
 					return (
 						<tr key='heading'>
+							<th>Edit</th>
 						{
 							Object.keys(row).map(function(key) 
 							{
@@ -376,7 +390,7 @@ var DataView = React.createClass(
 							<thead>
 								{colNames}
 							</thead>
-							<DataRows data={this.state.data}/>
+							<DataRows data={this.state.data} />
 						</table>
 					</div>
 				</div>
@@ -406,7 +420,13 @@ var DataRows = React.createClass(
 				console.log("Bing!");
 
 			return (
-				<tr key={i}>
+				<tr key={row.$id}>
+					<td>
+						<div className="checkbox">
+							<input type="checkbox" id={'checkbox_'+ row.$id}/>
+							<label htmlFor={'checkbox_'+ row.$id}></label>
+						</div>
+					</td>
 				{
 					Object.keys(row).map(function(key) 
 					{
