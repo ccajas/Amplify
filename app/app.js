@@ -322,6 +322,7 @@ var DataView = React.createClass({
 
 				this.setState({
 					data: data.request.rows,
+					fulldata: [],
 					postdata: this.props.postdata,
 					willReceiveProps: false,
 					url: this.props.url,
@@ -379,13 +380,13 @@ var DataView = React.createClass({
 		if (!search) return;
 
 		// If copy doesn't exist, search in original
-		var searchData = this.state.fullData ? this.state.fullData : this.state.data;
+		var searchdata = this.state.fulldata ? this.state.fulldata : this.state.data;
 
 		// Create a new, filtered array
 		var filtered = [];
 
-		for (var i = 0; i < $.makeArray(searchData).length; i++) {
-			var obj = searchData[i];
+		for (var i = 0; i < $.makeArray(searchdata).length; i++) {
+			var obj = searchdata[i];
 			var objMatch = false;
 
 			Object.keys(obj).map(function (key) {
@@ -397,7 +398,7 @@ var DataView = React.createClass({
 		}
 
 		// Keep original array as temporary
-		if (!this.state.fullData) this.setState({ fullData: this.state.data });
+		if (!this.state.fulldata.length) this.setState({ fulldata: this.state.data });
 
 		this.setState({ data: filtered });
 	},
