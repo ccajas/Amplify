@@ -328,8 +328,6 @@ var DataView = React.createClass({
 					dbname: this.props.dbname,
 					tablename: this.props.tablename
 				});
-
-				console.log(this.state.data);
 			}).bind(this),
 
 			error: (function (xhr, status, err) {
@@ -384,34 +382,31 @@ var DataView = React.createClass({
 			console.log("rendering DataView...");
 			console.log("loading rows...");
 
-			// Print column names
-			var colNames = $.makeArray(this.state.data).map(function (row, i) {
-				if (i == 0) {
-					return React.createElement(
-						'tr',
-						{ key: 'heading' },
-						React.createElement(
+			var colNames = $.makeArray(this.state.data[0]).map(function (row) {
+				return React.createElement(
+					'tr',
+					{ key: 'heading' },
+					React.createElement(
+						'th',
+						null,
+						'Edit'
+					),
+					Object.keys(row).map(function (key) {
+						return React.createElement(
 							'th',
-							null,
-							'Edit'
-						),
-						Object.keys(row).map(function (key) {
-							return React.createElement(
-								'th',
-								{ onClick: this._sortBy.bind(this, key), key: key },
+							{ onClick: this._sortBy.bind(this, key), key: key },
+							React.createElement(
+								'b',
+								null,
 								React.createElement(
-									'b',
+									'em',
 									null,
-									React.createElement(
-										'em',
-										null,
-										key
-									)
+									key
 								)
-							);
-						}, this)
-					);
-				}
+							)
+						);
+					}, this)
+				);
 			}, this);
 
 			return React.createElement(
@@ -657,7 +652,7 @@ var Amplify = React.createClass({
 			React.createElement(Header, null),
 			React.createElement(
 				'div',
-				{ className: 'container-fluid', id: 'container' },
+				{ className: 'container-fluid', id: 'main' },
 				this.state.app
 			),
 			React.createElement('br', null)
@@ -665,4 +660,5 @@ var Amplify = React.createClass({
 	}
 });
 
-ReactDOM.render(React.createElement(Amplify, { api_src: 'api/v1/' }), document.getElementById('main'));
+ReactDOM.render(React.createElement(Amplify, { api_src: 'api/v1/' }), document.body //getElementById('main')
+);
