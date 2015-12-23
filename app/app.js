@@ -546,17 +546,22 @@ var DataRows = React.createClass({
 		var rows = $.makeArray(this.props.data).map(function (row, i) {
 			if (i + 1 == length) console.log("Bing!");
 
+			function toggleRow(id) {
+				var checkbox = $('#check_' + id);
+				checkbox.prop("checked", !checkbox.prop("checked"));
+			}
+
 			return React.createElement(
 				'tr',
-				{ key: row.$id },
+				{ key: row.$id, onClick: toggleRow.bind(this, row.$id) },
 				React.createElement(
 					'td',
 					null,
 					React.createElement(
 						'div',
 						{ className: 'checkbox' },
-						React.createElement('input', { type: 'checkbox', id: 'checkbox_' + row.$id }),
-						React.createElement('label', { htmlFor: 'checkbox_' + row.$id })
+						React.createElement('input', { type: 'checkbox', id: 'check_' + row.$id }),
+						React.createElement('label', { htmlFor: 'check_' + row.$id })
 					)
 				),
 				Object.keys(row).map(function (key) {

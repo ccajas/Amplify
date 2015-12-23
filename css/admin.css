@@ -326,8 +326,8 @@ legend {
 
 .checkbox {
 	margin: 0px;
-	width: 15px;
-	height: 15px;
+	width: 16px;
+	height: 16px;
 	background-color: #ddd;
 	position: relative;
 }
@@ -339,7 +339,7 @@ legend {
 .checkbox label {
 	position: absolute;
 	padding-left: 0px;
-	width: 13px;
+	width: 14px;
 	min-height: 14px;
 	top: 1px;
 	left: 1px;
