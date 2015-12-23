@@ -375,7 +375,7 @@ var DataView = React.createClass({
 	},
 
 	_filter: function (e) {
-		var search = e.target.value;
+		var search = e.target.value.toLowerCase();
 		if (!search) return;
 
 		// If copy doesn't exist, search in original
@@ -389,7 +389,7 @@ var DataView = React.createClass({
 			var objMatch = false;
 
 			Object.keys(obj).map(function (key) {
-				if (typeof obj[key] === 'string' && !objMatch && obj[key].includes(search)) {
+				if (typeof obj[key] === 'string' && !objMatch && obj[key].toLowerCase().includes(search)) {
 					filtered.push(obj);
 					objMatch = true;
 				}
