@@ -310,6 +310,16 @@ var DataView = React.createClass({
 			data: { query: this.props.postdata },
 			cache: this.props.post ? true : false,
 			success: (function (data) {
+				// Map rows with unique identifires
+				data.request.rows.forEach(function (row, i) {
+					Object.defineProperty(row, '$id', {
+						value: i,
+						writable: false,
+						configurable: false,
+						enumerable: true
+					});
+				});
+
 				this.setState({
 					data: data.request.rows,
 					postdata: this.props.postdata,
@@ -318,6 +328,8 @@ var DataView = React.createClass({
 					dbname: this.props.dbname,
 					tablename: this.props.tablename
 				});
+
+				console.log(this.state.data);
 			}).bind(this),
 
 			error: (function (xhr, status, err) {
@@ -378,6 +390,11 @@ var DataView = React.createClass({
 					return React.createElement(
 						'tr',
 						{ key: 'heading' },
+						React.createElement(
+							'th',
+							null,
+							'Edit'
+						),
 						Object.keys(row).map(function (key) {
 							return React.createElement(
 								'th',
@@ -505,7 +522,17 @@ var DataRows = React.createClass({
 
 			return React.createElement(
 				'tr',
-				{ key: i },
+				{ key: row.$id },
+				React.createElement(
+					'td',
+					null,
+					React.createElement(
+						'div',
+						{ className: 'checkbox' },
+						React.createElement('input', { type: 'checkbox', id: 'checkbox_' + row.$id }),
+						React.createElement('label', { htmlFor: 'checkbox_' + row.$id })
+					)
+				),
 				Object.keys(row).map(function (key) {
 					if (row[key] && row[key].length > 80) row[key] = row[key].substring(0, 75) + "...";
 
