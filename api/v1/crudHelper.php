@@ -157,7 +157,7 @@ class CRUD_Helper
 				}
 			}
 
-			$query = "insert into ". $table ." (". $cols .") values (". $vals .")";
+			$query = "insert into `". $table ."` (". $cols .") values (". $vals .")";
 
 			$statement = $this->db->prepare($query);
 			$statement->execute($a);
@@ -191,7 +191,8 @@ class CRUD_Helper
 
 			if (!empty($order)) $order = 'order by '+ $order;
 			
-			$query = "select ".$columns." from ".$table." where 1=1 ". $wh." ".$order;
+			$table = explode('.', $table)[1];
+			$query = "select ".$columns." from `".$table."` where 1=1 ". $wh." ".$order;
 
 			$statement = $this->db->prepare($query);
 			$statement->execute($a);
@@ -245,7 +246,7 @@ class CRUD_Helper
 				$a[":".$key] = $value;
 			}
 
-			$query = "update ".$table." set ".$cols ." where 1=1 ". $wh;
+			$query = "update `".$table."` set ".$cols ." where 1=1 ". $wh;
 
 			$statement = $this->db->prepare($query);
 			$statement->execute($a);

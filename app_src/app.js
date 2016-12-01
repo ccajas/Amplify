@@ -1,4 +1,4 @@
-
+document.write(require("../app/nav.js"));
 
 /** Main app module area **/
 
@@ -30,7 +30,7 @@ var App = React.createClass(
 	{
 		console.log("rendering app view...")
 		var module = '';
-
+/*
 		if (this.props.module === 'home')
 			module = <Home url={this.state.url} webserver={this.state.data} _error={this._error}/>;
 
@@ -40,7 +40,7 @@ var App = React.createClass(
 
 		if (this.props.module === 'sql')
 			module = <Sql dbname={this.props.dbname} queryUrl={this.props.queryUrl} _error={this._error}/>;
-
+*/
 		return (
 			<div className="row-fluid">
 				<section className="col-sm-2">
