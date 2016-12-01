@@ -1,9 +1,9 @@
-
+//document.write(require("../app/nav.js"));
 
 /** Main app module area **/
 
 var App = React.createClass({
-	displayName: 'App',
+	displayName: "App",
 
 	getInitialState: function () {
 		return { data: [], url: this.props.url, errors: [] };
@@ -34,37 +34,37 @@ var App = React.createClass({
 		if (this.props.module === 'sql') module = React.createElement(Sql, { dbname: this.props.dbname, queryUrl: this.props.queryUrl, _error: this._error });
 
 		return React.createElement(
-			'div',
-			{ className: 'row-fluid' },
+			"div",
+			{ className: "row-fluid" },
 			React.createElement(
-				'section',
-				{ className: 'col-sm-2' },
+				"section",
+				{ className: "col-sm-2" },
 				React.createElement(SideNav, { url: this.props.sidenavUrl, dbname: this.props.dbname,
 					tablename: this.props.tablename, _error: this._error })
 			),
 			(() => {
 				if (this.state.errors.length) return React.createElement(
-					'section',
-					{ className: 'col-sm-10' },
+					"section",
+					{ className: "col-sm-10" },
 					React.createElement(
-						'div',
-						{ className: 'col-sm-12' },
-						React.createElement('br', null),
+						"div",
+						{ className: "col-sm-12" },
+						React.createElement("br", null),
 						React.createElement(
-							'h4',
+							"h4",
 							null,
-							'The following errors have been found:'
+							"The following errors have been found:"
 						),
-						React.createElement('br', null),
+						React.createElement("br", null),
 						React.createElement(
-							'p',
-							{ className: 'alert alert-danger' },
+							"p",
+							{ className: "alert alert-danger" },
 							this.state.errors
 						)
 					)
 				);else return React.createElement(
-					'section',
-					{ className: 'col-sm-10' },
+					"section",
+					{ className: "col-sm-10" },
 					module
 				);
 			})()
@@ -75,30 +75,30 @@ var App = React.createClass({
 /** Header component **/
 
 var Header = React.createClass({
-	displayName: 'Header',
+	displayName: "Header",
 
 	render: function () {
 		return React.createElement(
-			'header',
-			{ className: 'container-fluid' },
+			"header",
+			{ className: "container-fluid" },
 			React.createElement(
-				'div',
-				{ className: 'row-fluid' },
+				"div",
+				{ className: "row-fluid" },
 				React.createElement(
-					'h3',
-					{ className: 'col-sm-12' },
+					"h3",
+					{ className: "col-sm-12" },
 					React.createElement(
-						'a',
-						{ href: '#' },
-						'Amplify'
+						"a",
+						{ href: "#" },
+						"Amplify"
 					),
 					React.createElement(
-						'a',
-						{ href: '#' },
+						"a",
+						{ href: "#" },
 						React.createElement(
-							'span',
+							"span",
 							null,
-							'lite'
+							"lite"
 						)
 					)
 				)
@@ -110,7 +110,7 @@ var Header = React.createClass({
 /** Home module **/
 
 var Home = React.createClass({
-	displayName: 'Home',
+	displayName: "Home",
 
 	getInitialState: function () {
 		return { webserver: [], url: this.props.url };
@@ -142,52 +142,52 @@ var Home = React.createClass({
 		var extensions = $.makeArray(this.state.webserver.extensions);
 
 		return React.createElement(
-			'div',
-			{ className: 'col-sm-12' },
+			"div",
+			{ className: "col-sm-12" },
 			React.createElement(
-				'h3',
+				"h3",
 				null,
-				'Amplify Info'
+				"Amplify Info"
 			),
 			React.createElement(
-				'h4',
+				"h4",
 				null,
-				'Web Server'
+				"Web Server"
 			),
 			React.createElement(
-				'ul',
+				"ul",
 				null,
 				React.createElement(
-					'li',
+					"li",
 					null,
 					React.createElement(
-						'h5',
+						"h5",
 						null,
-						'Software'
+						"Software"
 					),
-					' ',
+					" ",
 					this.state.webserver.software
 				),
 				React.createElement(
-					'li',
+					"li",
 					null,
 					React.createElement(
-						'h5',
+						"h5",
 						null,
-						'PHP version'
+						"PHP version"
 					),
-					' ',
+					" ",
 					this.state.webserver.phpversion
 				),
 				React.createElement(
-					'li',
+					"li",
 					null,
 					React.createElement(
-						'h5',
+						"h5",
 						null,
-						'Extensions'
+						"Extensions"
 					),
-					' ',
+					" ",
 					extensions.join(', ')
 				)
 			)
@@ -198,11 +198,11 @@ var Home = React.createClass({
 /** Contenteditable component **/
 
 var ContentEditable = React.createClass({
-	displayName: 'ContentEditable',
+	displayName: "ContentEditable",
 
 	render: function () {
-		return React.createElement('div', { className: this.props.className, onInput: this.handleChange,
-			contentEditable: 'true', dangerouslySetInnerHTML: { __html: this.props.html } });
+		return React.createElement("div", { className: this.props.className, onInput: this.handleChange,
+			contentEditable: "true", dangerouslySetInnerHTML: { __html: this.props.html } });
 	},
 
 	shouldComponentUpdate: function (nextProps) {
@@ -227,7 +227,7 @@ var ContentEditable = React.createClass({
 /** SQL Module **/
 
 var Sql = React.createClass({
-	displayName: 'Sql',
+	displayName: "Sql",
 
 	getInitialState: function () {
 		return { query: '', url: this.props.queryUrl };
@@ -245,48 +245,48 @@ var Sql = React.createClass({
 
 	render: function () {
 		return React.createElement(
-			'div',
+			"div",
 			null,
 			React.createElement(
-				'form',
-				{ name: 'QueryForm' },
+				"form",
+				{ name: "QueryForm" },
 				React.createElement(
-					'fieldset',
+					"fieldset",
 					null,
 					React.createElement(
-						'legend',
+						"legend",
 						null,
-						'Run SQL query'
+						"Run SQL query"
 					),
 					React.createElement(
-						'button',
-						{ className: 'btn' },
-						'Buttons'
+						"button",
+						{ className: "btn" },
+						"Buttons"
 					),
-					React.createElement('br', null),
-					React.createElement(ContentEditable, { className: 'console', html: 'Enter your query here', _handleUpdate: this.handleUpdate,
+					React.createElement("br", null),
+					React.createElement(ContentEditable, { className: "console", html: "Enter your query here", _handleUpdate: this.handleUpdate,
 						ref: ref => this.sqlInput = ref }),
-					React.createElement('br', null),
+					React.createElement("br", null),
 					React.createElement(
-						'button',
-						{ className: 'btn', id: 'query_clear' },
-						'Clear'
+						"button",
+						{ className: "btn", id: "query_clear" },
+						"Clear"
 					),
 					React.createElement(
-						'button',
-						{ className: 'btn btn-primary', id: 'query_btn',
+						"button",
+						{ className: "btn btn-primary", id: "query_btn",
 							onClick: this.submitQuery },
-						'Submit Query'
+						"Submit Query"
 					)
 				)
 			),
 			(() => {
 				if (this.state.query) return React.createElement(
-					'section',
-					{ className: 'col-sm-10' },
-					React.createElement(DataView, { datatype: 'Query result', url: this.state.url,
+					"section",
+					{ className: "col-sm-10" },
+					React.createElement(DataView, { datatype: "Query result", url: this.state.url,
 						dbname: this.props.dbname, tablename: this.props.tablename,
-						post: 'true', postdata: this.state.query, _error: this.props._error })
+						post: "true", postdata: this.state.query, _error: this.props._error })
 				);
 			})()
 		);
@@ -296,7 +296,7 @@ var Sql = React.createClass({
 /** DataView Module **/
 
 var DataView = React.createClass({
-	displayName: 'DataView',
+	displayName: "DataView",
 
 	getInitialState: function () {
 		return { data: [], url: '', dbname: '', tablename: '' };
@@ -415,22 +415,22 @@ var DataView = React.createClass({
 
 			var colNames = $.makeArray(this.state.data[0]).map(function (row) {
 				return React.createElement(
-					'tr',
-					{ key: 'heading' },
+					"tr",
+					{ key: "heading" },
 					React.createElement(
-						'th',
+						"th",
 						null,
-						'Edit'
+						"Edit"
 					),
 					Object.keys(row).map(function (key) {
 						return React.createElement(
-							'th',
+							"th",
 							{ onClick: this._sortBy.bind(this, key), key: key },
 							React.createElement(
-								'b',
+								"b",
 								null,
 								React.createElement(
-									'em',
+									"em",
 									null,
 									key
 								)
@@ -441,81 +441,81 @@ var DataView = React.createClass({
 			}, this);
 
 			return React.createElement(
-				'div',
-				{ className: 'col-sm-12' },
+				"div",
+				{ className: "col-sm-12" },
 				React.createElement(
-					'h3',
+					"h3",
 					null,
 					this.props.tablename ? 'Table: ' : 'Database: ',
 					React.createElement(
-						'em',
+						"em",
 						null,
 						this.props.tablename ? this.props.tablename : this.props.dbname
 					)
 				),
 				React.createElement(
-					'h4',
-					{ className: 'sub' },
+					"h4",
+					{ className: "sub" },
 					rowsLength,
-					' ',
+					" ",
 					this.props.datatype,
 					rowsLength == 1 ? '' : 's'
 				),
 				React.createElement(
-					'div',
-					{ className: 'row' },
+					"div",
+					{ className: "row" },
 					React.createElement(
-						'h3',
-						{ className: 'col-sm-12' },
+						"h3",
+						{ className: "col-sm-12" },
 						this.props.datatype,
-						's'
+						"s"
 					),
 					React.createElement(
-						'div',
-						{ className: 'col-sm-8 pull-left optiontabs' },
+						"div",
+						{ className: "col-sm-8 pull-left optiontabs" },
 						React.createElement(
-							'h4',
-							{ className: 'sub' },
-							'With Selected:  ',
+							"h4",
+							{ className: "sub" },
+							"With Selected:  ",
 							React.createElement(
-								'button',
-								{ className: 'btn' },
-								'Edit'
+								"button",
+								{ className: "btn" },
+								"Edit"
 							),
-							' ',
+							" ",
 							React.createElement(
-								'button',
-								{ className: 'btn' },
-								'Analyze'
+								"button",
+								{ className: "btn" },
+								"Analyze"
 							),
-							' ',
+							" ",
 							React.createElement(
-								'button',
-								{ className: 'btn' },
-								'Check'
+								"button",
+								{ className: "btn" },
+								"Check"
 							),
-							' ',
+							" ",
 							React.createElement(
-								'button',
-								{ className: 'btn' },
-								'Optimize'
+								"button",
+								{ className: "btn" },
+								"Optimize"
 							)
 						)
 					),
 					React.createElement(
-						'div',
-						{ className: 'col-sm-4 pull-right', style: divStyle },
-						React.createElement('input', { onChange: this._filter, placeholder: 'Search in...' })
+						"div",
+						{ className: "col-sm-4 pull-right", style: divStyle },
+						React.createElement("input", { onChange: this._filter, placeholder: "Search in..." })
 					)
 				),
 				React.createElement(
-					'div',
-					{ className: 'datalist tableview' },
+					"div",
+					{ className: "datalist tableview" },
 					React.createElement(
-						'table',
-						{ className: 'col-sm-12' },
+						"table",
+						{ className: "col-sm-12" },
 						React.createElement(
-							'thead',
+							"thead",
 							null,
 							colNames
 						),
@@ -525,12 +525,12 @@ var DataView = React.createClass({
 			);
 		} else {
 			return React.createElement(
-				'div',
-				{ className: 'col-sm-12' },
+				"div",
+				{ className: "col-sm-12" },
 				React.createElement(
-					'h4',
+					"h4",
 					null,
-					'Loading...'
+					"Loading..."
 				)
 			);
 		}
@@ -540,7 +540,7 @@ var DataView = React.createClass({
 /** DataRows component **/
 
 var DataRows = React.createClass({
-	displayName: 'DataRows',
+	displayName: "DataRows",
 
 	render: function () {
 		var rows = $.makeArray(this.props.data).map(function (row, i) {
@@ -552,24 +552,24 @@ var DataRows = React.createClass({
 			}
 
 			return React.createElement(
-				'tr',
+				"tr",
 				{ key: row.$id, onClick: toggleRow.bind(this, row.$id) },
 				React.createElement(
-					'td',
+					"td",
 					null,
 					React.createElement(
-						'div',
-						{ className: 'checkbox' },
-						React.createElement('input', { type: 'checkbox', id: 'check_' + row.$id }),
-						React.createElement('label', { htmlFor: 'check_' + row.$id })
+						"div",
+						{ className: "checkbox" },
+						React.createElement("input", { type: "checkbox", id: 'check_' + row.$id }),
+						React.createElement("label", { htmlFor: 'check_' + row.$id })
 					)
 				),
 				Object.keys(row).map(function (key) {
 					if (row[key] && row[key].length > 80) row[key] = row[key].substring(0, 75) + "...";
 
 					return React.createElement(
-						'td',
-						{ className: 'trim-info', key: key },
+						"td",
+						{ className: "trim-info", key: key },
 						row[key]
 					);
 				})
@@ -577,7 +577,7 @@ var DataRows = React.createClass({
 		});
 
 		return React.createElement(
-			'tbody',
+			"tbody",
 			null,
 			rows
 		);
@@ -585,11 +585,11 @@ var DataRows = React.createClass({
 });
 
 var Amplify = React.createClass({
-	displayName: 'Amplify',
+	displayName: "Amplify",
 
 	getInitialState: function () {
 		console.log('Setup amplify');
-		return { app: React.createElement('div', null) };
+		return { app: React.createElement("div", null) };
 	},
 
 	componentDidMount: function () {
@@ -605,10 +605,10 @@ var Amplify = React.createClass({
 
 				self.setState({
 					app: React.createElement(App, {
-						module: 'home',
+						module: "home",
 						url: api('webserver'),
 						sidenavUrl: api('show/databases/mysql'),
-						dbname: '' })
+						dbname: "" })
 				});
 			},
 			'/db/:dbname/:action': function (dbname, action) {
@@ -618,7 +618,7 @@ var Amplify = React.createClass({
 					app: React.createElement(App, {
 						module: action,
 						url: api('show/tables/' + dbname),
-						datatype: 'Table',
+						datatype: "Table",
 						queryUrl: api('query/' + dbname),
 						sidenavUrl: api('show/tables/' + dbname),
 						dbname: dbname })
@@ -629,9 +629,9 @@ var Amplify = React.createClass({
 
 				self.setState({
 					app: React.createElement(App, {
-						module: 'dataview',
+						module: "dataview",
 						url: api('show/tables/' + dbname),
-						datatype: 'Table',
+						datatype: "Table",
 						sidenavUrl: api('show/tables/' + dbname),
 						dbname: dbname })
 				});
@@ -641,9 +641,9 @@ var Amplify = React.createClass({
 
 				self.setState({
 					app: React.createElement(App, {
-						module: 'dataview',
+						module: "dataview",
 						url: api('show/columns/' + dbname + '.' + tablename),
-						datatype: 'Column',
+						datatype: "Column",
 						sidenavUrl: api('show/tables/' + dbname),
 						dbname: dbname,
 						tablename: tablename })
@@ -655,9 +655,9 @@ var Amplify = React.createClass({
 
 				self.setState({
 					app: React.createElement(App, {
-						module: 'dataview',
+						module: "dataview",
 						url: api('select/' + dbname + '.' + tablename),
-						datatype: 'Row',
+						datatype: "Row",
 						sidenavUrl: api('show/tables/' + dbname),
 						dbname: dbname,
 						tablename: tablename })
@@ -667,9 +667,9 @@ var Amplify = React.createClass({
 				console.log("single article");
 				console.log(id);
 				var mod = React.createElement(
-					'div',
-					{ className: 'col-sm-12' },
-					'Single Page View for article ',
+					"div",
+					{ className: "col-sm-12" },
+					"Single Page View for article ",
 					id
 				);
 				self.setState({ module: mod });
@@ -683,17 +683,17 @@ var Amplify = React.createClass({
 
 	render: function () {
 		return React.createElement(
-			'div',
-			{ id: 'container' },
+			"div",
+			{ id: "container" },
 			React.createElement(Header, null),
 			React.createElement(
-				'div',
-				{ className: 'container-fluid', id: 'main' },
+				"div",
+				{ className: "container-fluid", id: "main" },
 				this.state.app
 			),
-			React.createElement('br', null)
+			React.createElement("br", null)
 		);
 	}
 });
 
-ReactDOM.render(React.createElement(Amplify, { api_src: 'api/v1/' }), document.getElementById('container'));
+ReactDOM.render(React.createElement(Amplify, { api_src: "api/v1/" }), document.getElementById('container'));

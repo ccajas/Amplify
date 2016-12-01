@@ -74,8 +74,11 @@ class Router
 
             // Get source of database
 
+            //print_r($segments);
+
             $db_table_segment = ($action == 'show') ? 2 : 1;
             $db_table = $segments[$db_table_segment];
+
             $from_db = explode('.', $db_table)[0];
 
             // Connect to database
