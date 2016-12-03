@@ -94,68 +94,9 @@ class Router
 				return;
 			}
 
+			// Call API action
+			$action = 'act_'. $action;
 			$data_objects['request'] = $this->$action($db, $segments, $db_table);
-
-			/*
-			// Custom query [ /query/ ]
-
-			if ($action == 'query')
-			{
-				$query = $_POST['query'];
-				//$query = json_decode(file_get_contents("php://input"), true);
-				$data_objects['request'] = $db->query($query);
-			}
-
-			// Get database or table names [ /show/:?from ]
-
-			if ($action == 'show')
-			{
-				$show_data = $segments[1];
-				$show_from = (!empty($segments[2])) ? $segments[2] : '';
-
-				$data_objects['request'] = (empty($show_from)) ?
-					$db->show($show_data) : $db->show($show_data, $show_from);
-			}
-
-			// Retrieve data row [ /get/:table/:id ]
-
-			if ($action == 'get')
-			{
-				$match = $segments[2];
-				$col = (is_numeric($match) ? 'id' : 'slug');
-				$data_objects['request'] = $db->select($db_table, "*", [$col => $match], "ORDER BY id");
-			}
-
-			// Retrieve data list [ /select/:table/:?orderByColumn ]
-
-			if ($action == 'select')
-			{
-				$order_by = (!empty($segments[2])) ? $segments[2] : '';
-				$data_objects['request'] = $db->select($db_table, "*", [], $order_by);
-			}
-
-			// Insert data [ /insert/:table/ ]           
-
-			if ($action == 'insert')
-			{
-				$cols = json_decode(file_get_contents("php://input"), true);
-				$data_objects['request'] = $db->insert($db_table, $cols);
-			}
-
-			// Update data [ /update/:table/:id/ ]           
-
-			if ($action == 'update')
-			{
-				$cols = json_decode(file_get_contents("php://input"), true);
-				$data_objects['request'] = $db->update($db_table, $cols, ['id' => $cols['id']]);
-			}
-
-			// Delete data [ /delete/:table/:id/ ]
-
-			if ($action == 'delete')
-			{
-				
-			}*/
 		}
 
 		$status = $data_objects['request']['status'] == 'error' ? 404 : 200;
@@ -168,7 +109,7 @@ class Router
 	Custom query [ /query/ ]
 	*/
 
-	private function query($db, $segments)
+	private function act_query($db, $segments)
 	{
 		$query = $_POST['query'];
 		//$query = json_decode(file_get_contents("php://input"), true);
@@ -180,7 +121,7 @@ class Router
 	Get database or table names/metadata [ /show/:?from ]
 	*/
 
-	private function show($db, $segments)
+	private function act_show($db, $segments)
 	{
 		$show_data = $segments[1];
 		$show_from = (!empty($segments[2])) ? $segments[2] : '';
@@ -193,10 +134,51 @@ class Router
 	Retrieve data list [ /select/:table/:?orderByColumn ]
 	*/
 
-	private function select($db, $segments, $db_table)
+	private function act_select($db, $segments, $db_table)
 	{
 		$order_by = (!empty($segments[2])) ? $segments[2] : '';
 		return $db->select($db_table, "*", [], $order_by);
+	}
+
+	/*
+	Retrieve data row [ /get/:table/:id ]
+	*/
+
+	private function act_get($db, $segments, $db_table)
+	{
+		$match = $segments[2];
+		$col = (is_numeric($match) ? 'id' : 'slug');
+		
+		return $db->select($db_table, "*", [$col => $match], "ORDER BY id");
+	}
+
+	/*
+	Insert data [ /insert/:table/ ]       
+	*/    
+
+	private function act_insert($db, $segments, $db_table)
+	{
+		$cols = json_decode(file_get_contents("php://input"), true);
+		return $db->insert($db_table, $cols);
+	}
+
+	/*
+	Update data [ /update/:table/:id/ ]
+	*/    
+
+	private function act_update($db, $segments, $db_table)
+	{
+		$cols = json_decode(file_get_contents("php://input"), true);
+		return $db->update($db_table, $cols, ['id' => $cols['id']]);
+	}
+
+	/*
+	Delete data [ /delete/:table/:id/ ]
+	*/
+
+	private function act_delete($db, $segments, $db_table)
+	{
+		return;	
 	}
 
 	/*
