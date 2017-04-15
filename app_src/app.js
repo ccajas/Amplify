@@ -202,7 +202,8 @@ var Sql = React.createClass(
 						<legend>Run SQL query</legend>
 						<button className="btn">Buttons</button>
 						<br/>
-						<ContentEditable className="console" html="Enter your query here" _handleUpdate={this.handleUpdate} 
+						<ContentEditable className="console" html="Enter your query here" 
+							_handleUpdate={this.handleUpdate} 
 							ref={(ref) => this.sqlInput = ref} />
 						<br/>
 						<button className="btn" id="query_clear">Clear</button>
@@ -252,7 +253,7 @@ var DataView = React.createClass(
 				{
 					Object.defineProperty(row, '$id', {
 						value: i,
-  						writable: false,
+						writable: false,
 						configurable: false,
 						enumerable: false
 					});
@@ -348,7 +349,7 @@ var DataView = React.createClass(
 			var obj = searchdata[i];
 			var objMatch = false;
 
-  			Object.keys(obj).map(function(key) 
+			Object.keys(obj).map(function(key) 
 			{
 				if (typeof obj[key] === 'string' && 
 					!objMatch && obj[key].toLowerCase().includes(search))

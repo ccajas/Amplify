@@ -3,14 +3,14 @@
 
 var SideNav = React.createClass(
 {
-  	getInitialState: function() 
-  	{
-    	return { data: [], dbname: ''};
-  	},
+	getInitialState: function() 
+	{
+		return { data: [], dbname: ''};
+	},
 
-  	loadData: function()
-  	{
-  	    $.ajax({
+	loadData: function()
+	{
+		$.ajax({
 			url: this.props.url,
 			dataType: 'json',
 			cache: false,
@@ -25,16 +25,16 @@ var SideNav = React.createClass(
 				this.props._error(xhr.responseJSON.request.message);
 			}.bind(this)
 		});
-  	},
+	},
 
-  	componentDidMount: function() 
-  	{
+	componentDidMount: function() 
+	{
 		this.loadData();
 	},
 
-  	componentDidUpdate: function() 
-  	{
-  		if (this.state.dbname != this.props.dbname)
+	componentDidUpdate: function() 
+	{
+		if (this.state.dbname != this.props.dbname)
 			this.loadData();
 	},
 
@@ -44,16 +44,16 @@ var SideNav = React.createClass(
 		var navheading = (self.props.dbname) ? self.props.dbname : 'Databases';
 
 		// Get list of tables/databases
-	    var datalist = this.state.data.map(function(item, i) 
-	    {
-	    	var itemEntry = (self.props.dbname) ? item.Table : item.Database;
+		var datalist = this.state.data.map(function(item, i) 
+		{
+			var itemEntry = (self.props.dbname) ? item.Table : item.Database;
 
-	    	// Return appropriate link based on item type
-	      	return ((self.props.dbname) ?
-	      		<li key={i}><a href={'#/db/'+ self.props.dbname +'/table/'+ itemEntry}>{itemEntry}</a></li> : 
+			// Return appropriate link based on item type
+			return ((self.props.dbname) ?
+				<li key={i}><a href={'#/db/'+ self.props.dbname +'/table/'+ itemEntry}>{itemEntry}</a></li> : 
 				<li key={i}><a href={'#/db/'+ itemEntry}>{itemEntry}</a></li>
-	      	);
-	    });
+			);
+		});
 
 		return (
 			<div className="sidenav">

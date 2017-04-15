@@ -74,8 +74,6 @@ class Router
 
 			// Get source of database
 
-			//print_r($segments);
-
 			$db_table_segment = ($action == 'show') ? 2 : 1;
 			$db_table = $segments[$db_table_segment];
 
@@ -99,7 +97,7 @@ class Router
 			$data_objects['request'] = $this->$action($db, $segments, $db_table);
 		}
 
-		$status = $data_objects['request']['status'] == 'error' ? 404 : 200;
+		$status = $data_objects['request']['status'] == 'error' ? 400 : 200;
 		$this->echoResponse($status, $data_objects);
 	}
 
